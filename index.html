@@ -1,0 +1,451 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="우리 동네 조경업체의 전문 분야와 시공 사례를 한눈에 비교하는 WE:GREEN입니다."
+    />
+    <meta name="theme-color" content="#2f5d50" />
+    <meta property="og:title" content="WE:GREEN | 우리 동네 조경업체 찾기" />
+    <meta
+      property="og:description"
+      content="지역, 전문 분야, 시공 사례를 확인하고 나에게 맞는 조경업체를 더 쉽게 찾아보세요."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="WE:GREEN" />
+    <meta property="og:url" content="https://we-scape-landing.vercel.app/" />
+    <meta property="og:image" content="assets/images/garden-hero.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://we-scape-landing.vercel.app/" />
+    <link rel="icon" type="image/png" href="assets/images/we-green-symbol.png" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "WE:GREEN",
+        "alternateName": "우리 동네 조경업체 찾기",
+        "url": "https://we-scape-landing.vercel.app/",
+        "description": "우리 동네 조경업체의 전문 분야와 시공 사례를 비교하는 지역 기반 디렉토리 서비스"
+      }
+    </script>
+    <title>WE:GREEN | 우리 동네 조경업체 찾기</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 바로가기</a>
+
+    <header class="site-header" data-header>
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="WE:GREEN 홈">
+          <img class="brand-symbol" src="assets/images/we-green-symbol.png" width="715" height="731" alt="" />
+          <span>WE:GREEN</span>
+        </a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="메뉴 열기"
+          data-menu-toggle
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="primary-nav" id="primary-navigation" aria-label="주요 메뉴" data-menu>
+          <a href="index.html#problem">서비스 소개</a>
+          <a href="companies.html">업체 찾기</a>
+          <a href="index.html#faq">FAQ</a>
+          <a class="button button-small button-secondary" href="companies.html">다른 업체 보기</a>
+          <a class="button button-small button-primary" href="supplier-register.html">업체 등록</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero section" id="top" aria-labelledby="hero-title">
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <p class="eyebrow">LOCAL LANDSCAPE DIRECTORY</p>
+            <h1 id="hero-title">
+              내 조건에 맞는<br />
+              <span>조경업체를 한눈에</span>
+            </h1>
+            <p class="hero-description">
+              흩어진 지역 조경업체의 전문 분야와 시공 사례를 한곳에서 살펴보고,
+              우리 집에 꼭 맞는 파트너를 더 편하게 찾아보세요.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="companies.html">업체 둘러보기</a>
+              <a class="button button-secondary" href="supplier-register.html">무료 업체 등록</a>
+            </div>
+            <ul class="hero-proof" aria-label="서비스 핵심 특징">
+              <li><span aria-hidden="true">✓</span> 지역 기반 탐색</li>
+              <li><span aria-hidden="true">✓</span> 실제 시공 사례</li>
+              <li><span aria-hidden="true">✓</span> 문의 전 정보 확인</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual reveal" data-delay="1">
+            <div class="hero-image-wrap">
+              <img
+                src="assets/images/garden-hero.webp"
+                width="1823"
+                height="863"
+                alt="디딤돌 산책로와 다양한 식재, 나무 데크가 조화된 주택 정원"
+                fetchpriority="high"
+              />
+              <div class="hero-badge hero-badge-top">
+                <span class="badge-icon" aria-hidden="true">⌖</span>
+                <span><strong>지역부터</strong> 가까운 업체 탐색</span>
+              </div>
+              <div class="hero-badge hero-badge-bottom">
+                <span class="badge-icon" aria-hidden="true">◫</span>
+                <span><strong>사례까지</strong> 한눈에 비교</span>
+              </div>
+            </div>
+            <p class="image-caption">WE:GREEN이 그리는 더 쉬운 조경 탐색 경험</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section problem-section" id="problem" aria-labelledby="problem-title">
+        <div class="container">
+          <div class="section-heading reveal">
+            <p class="eyebrow">WHY WE:GREEN</p>
+            <h2 id="problem-title">조경업체 찾기, 왜 이렇게 어려울까요?</h2>
+            <p>
+              검색 결과는 많지만 내 상황에 필요한 정보는 한곳에 모여 있지 않습니다.
+            </p>
+          </div>
+
+          <div class="problem-grid">
+            <article class="problem-card reveal">
+              <span class="card-number">01</span>
+              <h3>흩어진 업체 정보</h3>
+              <p>블로그, 지도, SNS를 오가며 업체 정보를 다시 정리해야 합니다.</p>
+            </article>
+            <article class="problem-card reveal" data-delay="1">
+              <span class="card-number">02</span>
+              <h3>어려운 조건 비교</h3>
+              <p>가능 지역과 전문 분야가 제각각이라 후보를 좁히기 어렵습니다.</p>
+            </article>
+            <article class="problem-card reveal" data-delay="2">
+              <span class="card-number">03</span>
+              <h3>부담스러운 첫 문의</h3>
+              <p>사례와 상담 정보를 알기 전에 연락부터 해야 하는 경우가 많습니다.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section value-section" id="features" aria-labelledby="value-title">
+        <div class="container">
+          <div class="value-intro">
+            <div class="section-heading section-heading-left reveal">
+              <p class="eyebrow">CLEARER CHOICE</p>
+              <h2 id="value-title">필요한 정보만 모아<br />비교는 더 명확하게</h2>
+            </div>
+            <p class="value-lead reveal" data-delay="1">
+              WE:GREEN은 단순히 업체를 나열하지 않습니다. 사용자가 문의 전 꼭
+              확인해야 할 정보에 집중합니다.
+            </p>
+          </div>
+
+          <div class="value-grid">
+            <article class="value-card reveal">
+              <div class="line-icon" aria-hidden="true">01</div>
+              <div>
+                <h3>지역 기반 탐색</h3>
+                <p>내가 원하는 지역에서 실제 시공이 가능한 업체부터 확인합니다.</p>
+                <span class="tag">가까운 업체</span>
+              </div>
+            </article>
+            <article class="value-card reveal" data-delay="1">
+              <div class="line-icon" aria-hidden="true">02</div>
+              <div>
+                <h3>전문 분야 비교</h3>
+                <p>정원 조성, 잔디, 식재 등 필요한 작업에 맞는 업체를 비교합니다.</p>
+                <span class="tag">명확한 비교</span>
+              </div>
+            </article>
+            <article class="value-card reveal" data-delay="2">
+              <div class="line-icon" aria-hidden="true">03</div>
+              <div>
+                <h3>시공 사례 확인</h3>
+                <p>대표 작업과 스타일을 미리 보고 내 취향에 맞는지 판단합니다.</p>
+                <span class="tag">신뢰할 단서</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section steps-section" id="how-it-works" aria-labelledby="steps-title">
+        <div class="container">
+          <div class="section-heading reveal" tabindex="-1">
+            <p class="eyebrow">HOW IT WORKS</p>
+            <h2 id="steps-title">복잡했던 탐색을 세 단계로</h2>
+            <p>WE:GREEN이 준비하는 이용 경험을 미리 살펴보세요.</p>
+          </div>
+
+          <ol class="steps-list">
+            <li class="step-item reveal">
+              <span class="step-number">1</span>
+              <div>
+                <h3>지역과 시공 유형 선택</h3>
+                <p>우리 집 위치와 필요한 작업을 간단히 선택합니다.</p>
+              </div>
+            </li>
+            <li class="step-item reveal" data-delay="1">
+              <span class="step-number">2</span>
+              <div>
+                <h3>업체와 사례 비교</h3>
+                <p>가능 지역, 전문 분야, 대표 사례를 같은 기준으로 살펴봅니다.</p>
+              </div>
+            </li>
+            <li class="step-item reveal" data-delay="2">
+              <span class="step-number">3</span>
+              <div>
+                <h3>적합한 업체에 문의</h3>
+                <p>상담 방식과 준비 정보를 확인한 뒤 부담 없이 연락합니다.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section companies-section" id="companies" aria-labelledby="companies-title">
+        <div class="container">
+          <div class="companies-heading">
+            <div class="section-heading section-heading-left reveal">
+              <p class="eyebrow">COMPANY PREVIEW</p>
+              <h2 id="companies-title">이런 업체들을 만나보세요</h2>
+              <p>지역과 전문 분야가 다른 조경 파트너를 비교해 보세요.</p>
+            </div>
+            <a class="text-link reveal" data-delay="1" href="companies.html">전체 업체 보기 ↗</a>
+          </div>
+
+          <div class="company-grid">
+            <article class="company-card reveal">
+              <div class="company-image">
+                <img
+                  src="assets/images/company-1.webp"
+                  width="720"
+                  height="540"
+                  alt="잔디 사이로 이어지는 디딤돌과 수국이 있는 정원"
+                  loading="lazy"
+                />
+                <span class="company-status">상담 가능</span>
+              </div>
+              <div class="company-body">
+                <div class="company-meta">
+                  <span>경기 포천</span>
+                  <span>정원 조성</span>
+                </div>
+                <h3>푸른정원 조경</h3>
+                <p>가족의 일상과 계절의 변화를 함께 담는 주택 정원 전문</p>
+                <a class="text-button" href="company-detail.html?id=blue">
+                  자세히 보기 <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </article>
+
+            <article class="company-card reveal" data-delay="1">
+              <div class="company-image">
+                <img
+                  src="assets/images/company-2.webp"
+                  width="720"
+                  height="540"
+                  alt="다양한 나무와 초화가 층을 이루는 자연주의 정원"
+                  loading="lazy"
+                />
+                <span class="company-status">상담 가능</span>
+              </div>
+              <div class="company-body">
+                <div class="company-meta">
+                  <span>경기 남양주</span>
+                  <span>식재 디자인</span>
+                </div>
+                <h3>숲결 가든</h3>
+                <p>기존 수목과 지역 환경을 살린 자연주의 식재 디자인</p>
+                <a class="text-button" href="company-detail.html?id=forest">
+                  자세히 보기 <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </article>
+
+            <article class="company-card reveal" data-delay="2">
+              <div class="company-image">
+                <img
+                  src="assets/images/company-3.webp"
+                  width="720"
+                  height="540"
+                  alt="단풍나무 그늘 아래 목재 데크와 야외 소파가 놓인 정원"
+                  loading="lazy"
+                />
+                <span class="company-status">상담 가능</span>
+              </div>
+              <div class="company-body">
+                <div class="company-meta">
+                  <span>경기 광주</span>
+                  <span>데크 · 휴게정원</span>
+                </div>
+                <h3>마루앤가든</h3>
+                <p>정원과 실내를 자연스럽게 잇는 데크와 휴게 공간 전문</p>
+                <a class="text-button" href="company-detail.html?id=maru">
+                  자세히 보기 <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section supplier-section" id="suppliers" aria-labelledby="supplier-title">
+        <div class="container supplier-panel reveal">
+          <div class="supplier-copy">
+            <p class="eyebrow eyebrow-light">FOR LANDSCAPERS</p>
+            <h2 id="supplier-title">좋은 작업을 더 많은 지역 고객에게</h2>
+            <p>
+              WE:GREEN은 지역 조경업체가 전문 분야와 대표 사례를 부담 없이 알리고
+              새로운 고객과 연결될 수 있는 공간을 준비하고 있습니다.
+            </p>
+            <a class="button button-light" href="supplier-register.html">무료 업체 등록하기</a>
+          </div>
+          <ul class="supplier-benefits">
+            <li><span>01</span> 별도 광고비 없이 업체 정보 소개</li>
+            <li><span>02</span> 서비스 가능 지역과 전문 분야 안내</li>
+            <li><span>03</span> 시공 사례를 찾는 잠재 고객과 연결</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section faq-section" id="faq" aria-labelledby="faq-title">
+        <div class="container faq-grid">
+          <div class="section-heading section-heading-left reveal">
+            <p class="eyebrow">FAQ</p>
+            <h2 id="faq-title">자주 묻는 질문</h2>
+            <p>WE:GREEN이 준비하는 서비스에 대해 알려드릴게요.</p>
+          </div>
+
+          <div class="accordion reveal" data-delay="1">
+            <article class="accordion-item">
+              <h3>
+                <button type="button" aria-expanded="false" aria-controls="faq-answer-1">
+                  WE:GREEN은 어떤 서비스인가요?
+                  <span aria-hidden="true">+</span>
+                </button>
+              </h3>
+              <div class="accordion-panel" id="faq-answer-1" hidden>
+                <p>
+                  지역 조경업체의 서비스 범위, 전문 분야, 시공 사례를 한곳에서
+                  비교하고 문의할 업체를 선택하도록 돕는 디렉토리 서비스입니다.
+                </p>
+              </div>
+            </article>
+            <article class="accordion-item">
+              <h3>
+                <button type="button" aria-expanded="false" aria-controls="faq-answer-2">
+                  견적·결제까지 제공하나요?
+                  <span aria-hidden="true">+</span>
+                </button>
+              </h3>
+              <div class="accordion-panel" id="faq-answer-2" hidden>
+                <p>
+                  초기 서비스는 업체 비교와 직접 문의에 집중합니다. 견적, 결제,
+                  계약 중개는 서비스 검증 이후 검토할 예정입니다.
+                </p>
+              </div>
+            </article>
+            <article class="accordion-item">
+              <h3>
+                <button type="button" aria-expanded="false" aria-controls="faq-answer-3">
+                  등록된 업체 정보는 어떻게 확인하나요?
+                  <span aria-hidden="true">+</span>
+                </button>
+              </h3>
+              <div class="accordion-panel" id="faq-answer-3" hidden>
+                <p>
+                  운영자가 업체의 기본 정보와 공개 동의를 확인한 뒤 노출하는
+                  방식을 계획하고 있습니다.
+                </p>
+              </div>
+            </article>
+            <article class="accordion-item">
+              <h3>
+                <button type="button" aria-expanded="false" aria-controls="faq-answer-4">
+                  조경업체는 어떻게 참여할 수 있나요?
+                  <span aria-hidden="true">+</span>
+                </button>
+              </h3>
+              <div class="accordion-panel" id="faq-answer-4" hidden>
+                <p>
+                  현재 무료 등록 의향을 받고 있습니다. 관심 버튼을 눌러 향후 등록
+                  절차와 안내 내용을 확인해 주세요.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section final-cta-section" aria-labelledby="final-cta-title">
+        <div class="container final-cta reveal">
+          <p class="eyebrow">A BETTER WAY TO CHOOSE</p>
+          <h2 id="final-cta-title">좋은 정원의 시작,<br />더 명확한 비교에서</h2>
+          <p>우리 지역에서 활동하는 조경업체의 전문 분야와 시공 사례를 확인해 보세요.</p>
+          <div class="final-actions">
+            <a class="button button-primary" href="companies.html">업체 찾기</a>
+            <a class="button button-secondary" href="supplier-register.html">업체 등록</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="brand brand-footer" href="index.html">
+            <img class="footer-logo" src="assets/images/we-green-logo.png" width="742" height="993" alt="WE:GREEN 우리 동네 조경업체 찾기" />
+          </a>
+          <p>지역과 조건에 맞는 조경업체를 더 쉽게 비교하는 방법.</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html#problem">서비스 소개</a>
+          <a href="companies.html">업체 찾기</a>
+          <a href="supplier-register.html">업체 등록</a>
+          <a href="index.html#faq">FAQ</a>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <p>© 2026 WE:GREEN. All rights reserved.</p>
+        <p>지역 조경업체와 고객을 연결하는 디렉토리 서비스</p>
+      </div>
+    </footer>
+
+    <noscript>
+      <div class="noscript-message">
+        JavaScript가 꺼져 있어 메뉴와 모달 기능은 사용할 수 없지만 모든 서비스
+        소개 콘텐츠는 계속 확인할 수 있습니다.
+      </div>
+    </noscript>
+  </body>
+</html>
+
