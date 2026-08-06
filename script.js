@@ -4,7 +4,9 @@
   const body = document.body;
   const menuToggle = document.querySelector("[data-menu-toggle]");
   const menu = document.querySelector("[data-menu]");
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
 
   const closeMenu = () => {
     if (!menuToggle || !menu) return;
@@ -48,12 +50,17 @@
       if (!target) return;
 
       event.preventDefault();
-      target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      target.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
 
       window.setTimeout(
         () => {
-          const focusTarget = target.querySelector("h1, h2, [tabindex='-1']") || target;
-          if (!focusTarget.hasAttribute("tabindex")) focusTarget.setAttribute("tabindex", "-1");
+          const focusTarget =
+            target.querySelector("h1, h2, [tabindex='-1']") || target;
+          if (!focusTarget.hasAttribute("tabindex"))
+            focusTarget.setAttribute("tabindex", "-1");
           focusTarget.focus({ preventScroll: true });
         },
         reduceMotion ? 0 : 500,
@@ -78,11 +85,50 @@
   const resultCount = document.querySelector("[data-result-count]");
   const emptyState = document.querySelector("[data-empty-state]");
 
+  const getFilterState = () => ({
+    region: regionFilter?.value || "all",
+    specialty: specialtyFilter?.value || "all",
+  });
+
+  const applyFilterStateToUrl = (filters = getFilterState()) => {
+    if (!window.history?.replaceState) return;
+    const nextUrl = new URL(window.location.href);
+
+    if (filters.region === "all") nextUrl.searchParams.delete("region");
+    else nextUrl.searchParams.set("region", filters.region);
+
+    if (filters.specialty === "all") nextUrl.searchParams.delete("specialty");
+    else nextUrl.searchParams.set("specialty", filters.specialty);
+
+    window.history.replaceState({}, "", `${nextUrl.pathname}${nextUrl.search}`);
+  };
+
+  const syncDetailLinks = (filters = getFilterState()) => {
+    const searchParams = new URLSearchParams();
+    if (filters.region !== "all") searchParams.set("region", filters.region);
+    if (filters.specialty !== "all")
+      searchParams.set("specialty", filters.specialty);
+
+    document.querySelectorAll(".company-card .text-button").forEach((link) => {
+      const detailUrl = new URL(
+        link.getAttribute("href") || "company-detail.html",
+        window.location.href,
+      );
+      detailUrl.searchParams.delete("region");
+      detailUrl.searchParams.delete("specialty");
+
+      searchParams.forEach((value, key) => {
+        detailUrl.searchParams.set(key, value);
+      });
+
+      link.href = `${detailUrl.pathname}${detailUrl.search}`;
+    });
+  };
+
   const filterCompanies = () => {
     if (!companyList) return;
     const cards = [...companyList.querySelectorAll("[data-region]")];
-    const region = regionFilter?.value || "all";
-    const specialty = specialtyFilter?.value || "all";
+    const { region, specialty } = getFilterState();
     let visibleCount = 0;
 
     cards.forEach((card) => {
@@ -96,10 +142,43 @@
 
     if (resultCount) resultCount.textContent = String(visibleCount);
     if (emptyState) emptyState.hidden = visibleCount !== 0;
+
+    applyFilterStateToUrl({ region, specialty });
+    syncDetailLinks({ region, specialty });
+  };
+
+  const initializeFilters = () => {
+    if (!regionFilter || !specialtyFilter) return;
+    const currentParams = new URLSearchParams(window.location.search);
+    const initialRegion = currentParams.get("region") || "all";
+    const initialSpecialty = currentParams.get("specialty") || "all";
+
+    if (["경기", "서울", "인천"].includes(initialRegion)) {
+      regionFilter.value = initialRegion;
+    } else {
+      regionFilter.value = "all";
+    }
+
+    if (
+      [
+        "주택 정원 조성",
+        "식재 디자인",
+        "데크·휴게 공간",
+        "정원 유지관리",
+        "상업 공간 조경",
+      ].includes(initialSpecialty)
+    ) {
+      specialtyFilter.value = initialSpecialty;
+    } else {
+      specialtyFilter.value = "all";
+    }
+
+    filterCompanies();
   };
 
   regionFilter?.addEventListener("change", filterCompanies);
   specialtyFilter?.addEventListener("change", filterCompanies);
+  initializeFilters();
 
   const companyDetails = {
     blue: {
@@ -218,10 +297,29 @@
     },
   };
 
+  const companyLinks = document.querySelectorAll("[data-company-link]");
+  const buildCompaniesUrl = () => {
+    const currentParams = new URLSearchParams(window.location.search);
+    const nextParams = new URLSearchParams();
+
+    if (currentParams.get("region"))
+      nextParams.set("region", currentParams.get("region"));
+    if (currentParams.get("specialty"))
+      nextParams.set("specialty", currentParams.get("specialty"));
+
+    const queryString = nextParams.toString();
+    return queryString ? `companies.html?${queryString}` : "companies.html";
+  };
+
+  companyLinks.forEach((link) => {
+    link.href = buildCompaniesUrl();
+  });
+
   const detailRoot = document.querySelector("[data-detail-root]");
 
   if (detailRoot) {
-    const detailId = new URLSearchParams(window.location.search).get("id") || "maru";
+    const detailId =
+      new URLSearchParams(window.location.search).get("id") || "maru";
     const detail = companyDetails[detailId] || companyDetails.maru;
     const setText = (selector, value) => {
       document.querySelectorAll(selector).forEach((element) => {
@@ -244,10 +342,26 @@
     setText("[data-detail-phone]", detail.phone);
     setText("[data-detail-career]", detail.career);
     setText("[data-detail-description]", detail.description);
-    setImage("[data-detail-image]", detail.image, `${detail.name} 대표 시공 정원`);
-    setImage("[data-detail-gallery-one]", detail.gallery[0], `${detail.name} 대표 시공 사례 전경`);
-    setImage("[data-detail-gallery-two]", detail.gallery[1], `${detail.name} 대표 시공 사례 식재`);
-    setImage("[data-detail-gallery-three]", detail.gallery[2], `${detail.name} 대표 시공 사례 휴게 공간`);
+    setImage(
+      "[data-detail-image]",
+      detail.image,
+      `${detail.name} 대표 시공 정원`,
+    );
+    setImage(
+      "[data-detail-gallery-one]",
+      detail.gallery[0],
+      `${detail.name} 대표 시공 사례 전경`,
+    );
+    setImage(
+      "[data-detail-gallery-two]",
+      detail.gallery[1],
+      `${detail.name} 대표 시공 사례 식재`,
+    );
+    setImage(
+      "[data-detail-gallery-three]",
+      detail.gallery[2],
+      `${detail.name} 대표 시공 사례 휴게 공간`,
+    );
 
     const serviceList = document.querySelector("[data-detail-services]");
     if (serviceList) {
@@ -273,7 +387,10 @@
         behavior: reduceMotion ? "auto" : "smooth",
         block: "center",
       });
-      window.setTimeout(() => inquiryFeedback.focus({ preventScroll: true }), reduceMotion ? 0 : 450);
+      window.setTimeout(
+        () => inquiryFeedback.focus({ preventScroll: true }),
+        reduceMotion ? 0 : 450,
+      );
     });
   });
 
@@ -282,14 +399,20 @@
   const imageInput = document.querySelector("[data-image-input]");
   const fileFeedback = document.querySelector("[data-file-feedback]");
   const specialtyGroup = document.querySelector("[data-specialty-group]");
-  const specialtyCheckboxes = [...document.querySelectorAll('input[name="specialty"]')];
+  const specialtyCheckboxes = [
+    ...document.querySelectorAll('input[name="specialty"]'),
+  ];
   const specialtyError = document.querySelector("[data-specialty-error]");
 
   const validateSpecialties = () => {
-    const hasSpecialty = specialtyCheckboxes.some((checkbox) => checkbox.checked);
+    const hasSpecialty = specialtyCheckboxes.some(
+      (checkbox) => checkbox.checked,
+    );
     specialtyGroup?.setAttribute("aria-invalid", String(!hasSpecialty));
     if (specialtyError) {
-      specialtyError.textContent = hasSpecialty ? "" : "전문 분야를 한 개 이상 선택해 주세요.";
+      specialtyError.textContent = hasSpecialty
+        ? ""
+        : "전문 분야를 한 개 이상 선택해 주세요.";
     }
     return hasSpecialty;
   };
@@ -318,19 +441,24 @@
     event.preventDefault();
     let firstInvalid = null;
 
-    registerForm.querySelectorAll("input, select, textarea").forEach((field) => {
-      const error = field.closest(".field")?.querySelector(".field-error");
-      field.setAttribute("aria-invalid", String(!field.validity.valid));
+    registerForm
+      .querySelectorAll("input, select, textarea")
+      .forEach((field) => {
+        const error = field.closest(".field")?.querySelector(".field-error");
+        field.setAttribute("aria-invalid", String(!field.validity.valid));
 
-      if (error) {
-        if (field.validity.valueMissing) error.textContent = "필수 항목을 입력해 주세요.";
-        else if (field.validity.typeMismatch) error.textContent = "올바른 형식으로 입력해 주세요.";
-        else if (field.validity.tooShort) error.textContent = "20자 이상 입력해 주세요.";
-        else error.textContent = "";
-      }
+        if (error) {
+          if (field.validity.valueMissing)
+            error.textContent = "필수 항목을 입력해 주세요.";
+          else if (field.validity.typeMismatch)
+            error.textContent = "올바른 형식으로 입력해 주세요.";
+          else if (field.validity.tooShort)
+            error.textContent = "20자 이상 입력해 주세요.";
+          else error.textContent = "";
+        }
 
-      if (!field.validity.valid && !firstInvalid) firstInvalid = field;
-    });
+        if (!field.validity.valid && !firstInvalid) firstInvalid = field;
+      });
 
     if (!validateSpecialties() && !firstInvalid) {
       firstInvalid = specialtyCheckboxes[0];
@@ -367,4 +495,3 @@
     revealElements.forEach((element) => observer.observe(element));
   }
 })();
-

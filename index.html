@@ -19,7 +19,11 @@
     <meta property="og:image" content="assets/images/garden-hero.webp" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href="https://we-scape-landing.vercel.app/" />
-    <link rel="icon" type="image/png" href="assets/images/we-green-symbol.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/images/we-green-symbol.png"
+    />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -51,7 +55,13 @@
     <header class="site-header" data-header>
       <div class="container header-inner">
         <a class="brand" href="index.html" aria-label="WE:GREEN 홈">
-          <img class="brand-symbol" src="assets/images/we-green-symbol.png" width="715" height="731" alt="" />
+          <img
+            class="brand-symbol"
+            src="assets/images/we-green-symbol.png"
+            width="715"
+            height="731"
+            alt=""
+          />
           <span>WE:GREEN</span>
         </a>
 
@@ -68,12 +78,29 @@
           <span></span>
         </button>
 
-        <nav class="primary-nav" id="primary-navigation" aria-label="주요 메뉴" data-menu>
-          <a href="index.html#problem">서비스 소개</a>
-          <a href="companies.html">업체 찾기</a>
-          <a href="index.html#faq">FAQ</a>
-          <a class="button button-small button-secondary" href="companies.html">다른 업체 보기</a>
-          <a class="button button-small button-primary" href="supplier-register.html">업체 등록</a>
+        <nav
+          class="primary-nav"
+          id="primary-navigation"
+          aria-label="주요 메뉴"
+          data-menu
+        >
+          <div class="nav-links">
+            <a href="index.html#problem">서비스 소개</a>
+            <a href="companies.html">업체 찾기</a>
+            <a href="index.html#faq">FAQ</a>
+          </div>
+          <div class="nav-actions">
+            <a
+              class="button button-small button-secondary"
+              href="companies.html"
+              >다른 업체 보기</a
+            >
+            <a
+              class="button button-small button-primary"
+              href="supplier-register.html"
+              >업체 등록</a
+            >
+          </div>
         </nav>
       </div>
     </header>
@@ -85,15 +112,19 @@
             <p class="eyebrow">LOCAL LANDSCAPE DIRECTORY</p>
             <h1 id="hero-title">
               내 조건에 맞는<br />
-              <span>조경업체를 한눈에</span>
+              <span>조경업체를 한 곳에서</span>
             </h1>
             <p class="hero-description">
               흩어진 지역 조경업체의 전문 분야와 시공 사례를 한곳에서 살펴보고,
               우리 집에 꼭 맞는 파트너를 더 편하게 찾아보세요.
             </p>
             <div class="hero-actions">
-              <a class="button button-primary" href="companies.html">업체 둘러보기</a>
-              <a class="button button-secondary" href="supplier-register.html">무료 업체 등록</a>
+              <a class="button button-primary" href="companies.html"
+                >다른 업체 찾기</a
+              >
+              <a class="button button-secondary" href="supplier-register.html"
+                >무료 업체 등록</a
+              >
             </div>
             <ul class="hero-proof" aria-label="서비스 핵심 특징">
               <li><span aria-hidden="true">✓</span> 지역 기반 탐색</li>
@@ -112,26 +143,59 @@
                 fetchpriority="high"
               />
               <div class="hero-badge hero-badge-top">
-                <span class="badge-icon" aria-hidden="true">⌖</span>
+                <span class="badge-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M12 21s7-7.58 7-12A7 7 0 0 0 5 9c0 4.42 7 12 7 12Z"
+                    />
+                    <circle cx="12" cy="9" r="2.4" />
+                  </svg>
+                </span>
                 <span><strong>지역부터</strong> 가까운 업체 탐색</span>
               </div>
               <div class="hero-badge hero-badge-bottom">
-                <span class="badge-icon" aria-hidden="true">◫</span>
+                <span class="badge-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="3.5" y="3.5" width="11" height="11" rx="2" />
+                    <path d="M9 20.5h9a2 2 0 0 0 2-2v-9" />
+                  </svg>
+                </span>
                 <span><strong>사례까지</strong> 한눈에 비교</span>
               </div>
             </div>
-            <p class="image-caption">WE:GREEN이 그리는 더 쉬운 조경 탐색 경험</p>
+            <p class="image-caption">
+              WE:GREEN이 그리는 더 쉬운 조경 탐색 경험
+            </p>
           </div>
         </div>
       </section>
 
-      <section class="section problem-section" id="problem" aria-labelledby="problem-title">
+      <section
+        class="section problem-section"
+        id="problem"
+        aria-labelledby="problem-title"
+      >
         <div class="container">
           <div class="section-heading reveal">
             <p class="eyebrow">WHY WE:GREEN</p>
             <h2 id="problem-title">조경업체 찾기, 왜 이렇게 어려울까요?</h2>
             <p>
-              검색 결과는 많지만 내 상황에 필요한 정보는 한곳에 모여 있지 않습니다.
+              검색 결과는 많지만 내 상황에 필요한 정보는 한곳에 모여 있지
+              않습니다.
             </p>
           </div>
 
@@ -139,28 +203,40 @@
             <article class="problem-card reveal">
               <span class="card-number">01</span>
               <h3>흩어진 업체 정보</h3>
-              <p>블로그, 지도, SNS를 오가며 업체 정보를 다시 정리해야 합니다.</p>
+              <p>
+                블로그, 지도, SNS를 오가며 업체 정보를 다시 정리해야 합니다.
+              </p>
             </article>
             <article class="problem-card reveal" data-delay="1">
               <span class="card-number">02</span>
               <h3>어려운 조건 비교</h3>
-              <p>가능 지역과 전문 분야가 제각각이라 후보를 좁히기 어렵습니다.</p>
+              <p>
+                가능 지역과 전문 분야가 제각각이라 후보를 좁히기 어렵습니다.
+              </p>
             </article>
             <article class="problem-card reveal" data-delay="2">
               <span class="card-number">03</span>
               <h3>부담스러운 첫 문의</h3>
-              <p>사례와 상담 정보를 알기 전에 연락부터 해야 하는 경우가 많습니다.</p>
+              <p>
+                사례와 상담 정보를 알기 전에 연락부터 해야 하는 경우가 많습니다.
+              </p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section value-section" id="features" aria-labelledby="value-title">
+      <section
+        class="section value-section"
+        id="features"
+        aria-labelledby="value-title"
+      >
         <div class="container">
           <div class="value-intro">
             <div class="section-heading section-heading-left reveal">
               <p class="eyebrow">CLEARER CHOICE</p>
-              <h2 id="value-title">필요한 정보만 모아<br />비교는 더 명확하게</h2>
+              <h2 id="value-title">
+                필요한 정보만 모아<br />비교는 더 명확하게
+              </h2>
             </div>
             <p class="value-lead reveal" data-delay="1">
               WE:GREEN은 단순히 업체를 나열하지 않습니다. 사용자가 문의 전 꼭
@@ -173,7 +249,9 @@
               <div class="line-icon" aria-hidden="true">01</div>
               <div>
                 <h3>지역 기반 탐색</h3>
-                <p>내가 원하는 지역에서 실제 시공이 가능한 업체부터 확인합니다.</p>
+                <p>
+                  내가 원하는 지역에서 실제 시공이 가능한 업체부터 확인합니다.
+                </p>
                 <span class="tag">가까운 업체</span>
               </div>
             </article>
@@ -181,7 +259,9 @@
               <div class="line-icon" aria-hidden="true">02</div>
               <div>
                 <h3>전문 분야 비교</h3>
-                <p>정원 조성, 잔디, 식재 등 필요한 작업에 맞는 업체를 비교합니다.</p>
+                <p>
+                  정원 조성, 잔디, 식재 등 필요한 작업에 맞는 업체를 비교합니다.
+                </p>
                 <span class="tag">명확한 비교</span>
               </div>
             </article>
@@ -189,7 +269,9 @@
               <div class="line-icon" aria-hidden="true">03</div>
               <div>
                 <h3>시공 사례 확인</h3>
-                <p>대표 작업과 스타일을 미리 보고 내 취향에 맞는지 판단합니다.</p>
+                <p>
+                  대표 작업과 스타일을 미리 보고 내 취향에 맞는지 판단합니다.
+                </p>
                 <span class="tag">신뢰할 단서</span>
               </div>
             </article>
@@ -197,7 +279,11 @@
         </div>
       </section>
 
-      <section class="section steps-section" id="how-it-works" aria-labelledby="steps-title">
+      <section
+        class="section steps-section"
+        id="how-it-works"
+        aria-labelledby="steps-title"
+      >
         <div class="container">
           <div class="section-heading reveal" tabindex="-1">
             <p class="eyebrow">HOW IT WORKS</p>
@@ -217,7 +303,9 @@
               <span class="step-number">2</span>
               <div>
                 <h3>업체와 사례 비교</h3>
-                <p>가능 지역, 전문 분야, 대표 사례를 같은 기준으로 살펴봅니다.</p>
+                <p>
+                  가능 지역, 전문 분야, 대표 사례를 같은 기준으로 살펴봅니다.
+                </p>
               </div>
             </li>
             <li class="step-item reveal" data-delay="2">
@@ -231,7 +319,11 @@
         </div>
       </section>
 
-      <section class="section companies-section" id="companies" aria-labelledby="companies-title">
+      <section
+        class="section companies-section"
+        id="companies"
+        aria-labelledby="companies-title"
+      >
         <div class="container">
           <div class="companies-heading">
             <div class="section-heading section-heading-left reveal">
@@ -239,7 +331,9 @@
               <h2 id="companies-title">이런 업체들을 만나보세요</h2>
               <p>지역과 전문 분야가 다른 조경 파트너를 비교해 보세요.</p>
             </div>
-            <a class="text-link reveal" data-delay="1" href="companies.html">전체 업체 보기 ↗</a>
+            <a class="text-link reveal" data-delay="1" href="companies.html"
+              >전체 업체 보기 ↗</a
+            >
           </div>
 
           <div class="company-grid">
@@ -318,16 +412,22 @@
         </div>
       </section>
 
-      <section class="section supplier-section" id="suppliers" aria-labelledby="supplier-title">
+      <section
+        class="section supplier-section"
+        id="suppliers"
+        aria-labelledby="supplier-title"
+      >
         <div class="container supplier-panel reveal">
           <div class="supplier-copy">
             <p class="eyebrow eyebrow-light">FOR LANDSCAPERS</p>
             <h2 id="supplier-title">좋은 작업을 더 많은 지역 고객에게</h2>
             <p>
-              WE:GREEN은 지역 조경업체가 전문 분야와 대표 사례를 부담 없이 알리고
-              새로운 고객과 연결될 수 있는 공간을 준비하고 있습니다.
+              WE:GREEN은 지역 조경업체가 전문 분야와 대표 사례를 부담 없이
+              알리고 새로운 고객과 연결될 수 있는 공간을 준비하고 있습니다.
             </p>
-            <a class="button button-light" href="supplier-register.html">무료 업체 등록하기</a>
+            <a class="button button-light" href="supplier-register.html"
+              >무료 업체 등록하기</a
+            >
           </div>
           <ul class="supplier-benefits">
             <li><span>01</span> 별도 광고비 없이 업체 정보 소개</li>
@@ -348,7 +448,11 @@
           <div class="accordion reveal" data-delay="1">
             <article class="accordion-item">
               <h3>
-                <button type="button" aria-expanded="false" aria-controls="faq-answer-1">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-1"
+                >
                   WE:GREEN은 어떤 서비스인가요?
                   <span aria-hidden="true">+</span>
                 </button>
@@ -362,7 +466,11 @@
             </article>
             <article class="accordion-item">
               <h3>
-                <button type="button" aria-expanded="false" aria-controls="faq-answer-2">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-2"
+                >
                   견적·결제까지 제공하나요?
                   <span aria-hidden="true">+</span>
                 </button>
@@ -376,7 +484,11 @@
             </article>
             <article class="accordion-item">
               <h3>
-                <button type="button" aria-expanded="false" aria-controls="faq-answer-3">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-3"
+                >
                   등록된 업체 정보는 어떻게 확인하나요?
                   <span aria-hidden="true">+</span>
                 </button>
@@ -390,15 +502,19 @@
             </article>
             <article class="accordion-item">
               <h3>
-                <button type="button" aria-expanded="false" aria-controls="faq-answer-4">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="faq-answer-4"
+                >
                   조경업체는 어떻게 참여할 수 있나요?
                   <span aria-hidden="true">+</span>
                 </button>
               </h3>
               <div class="accordion-panel" id="faq-answer-4" hidden>
                 <p>
-                  현재 무료 등록 의향을 받고 있습니다. 관심 버튼을 눌러 향후 등록
-                  절차와 안내 내용을 확인해 주세요.
+                  현재 무료 등록 의향을 받고 있습니다. 관심 버튼을 눌러 향후
+                  등록 절차와 안내 내용을 확인해 주세요.
                 </p>
               </div>
             </article>
@@ -406,14 +522,24 @@
         </div>
       </section>
 
-      <section class="section final-cta-section" aria-labelledby="final-cta-title">
+      <section
+        class="section final-cta-section"
+        aria-labelledby="final-cta-title"
+      >
         <div class="container final-cta reveal">
           <p class="eyebrow">A BETTER WAY TO CHOOSE</p>
-          <h2 id="final-cta-title">좋은 정원의 시작,<br />더 명확한 비교에서</h2>
-          <p>우리 지역에서 활동하는 조경업체의 전문 분야와 시공 사례를 확인해 보세요.</p>
+          <h2 id="final-cta-title">
+            좋은 정원의 시작,<br />더 명확한 비교에서
+          </h2>
+          <p>
+            우리 지역에서 활동하는 조경업체의 전문 분야와 시공 사례를 확인해
+            보세요.
+          </p>
           <div class="final-actions">
             <a class="button button-primary" href="companies.html">업체 찾기</a>
-            <a class="button button-secondary" href="supplier-register.html">업체 등록</a>
+            <a class="button button-secondary" href="supplier-register.html"
+              >업체 등록</a
+            >
           </div>
         </div>
       </section>
@@ -423,7 +549,13 @@
       <div class="container footer-grid">
         <div>
           <a class="brand brand-footer" href="index.html">
-            <img class="footer-logo" src="assets/images/we-green-logo.png" width="742" height="993" alt="WE:GREEN 우리 동네 조경업체 찾기" />
+            <img
+              class="footer-logo"
+              src="assets/images/we-green-logo.png"
+              width="742"
+              height="500"
+              alt="WE:GREEN 우리 동네 조경업체 찾기"
+            />
           </a>
           <p>지역과 조건에 맞는 조경업체를 더 쉽게 비교하는 방법.</p>
         </div>
@@ -448,4 +580,3 @@
     </noscript>
   </body>
 </html>
-
