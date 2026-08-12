@@ -1,12 +1,27 @@
 ﻿(() => {
   "use strict";
 
+  /**
+   * WE:GREEN front-end behaviors
+   *
+   * Data ownership (for handoff):
+   * - Company list cards live in HTML (index.html, companies.html).
+   * - Detail content lives in COMPANY_DETAILS below (company-detail.html?id=...).
+   * - Filter option values live in the <select> markup; JS reads them (do not hardcode).
+   * Keep list card `href="...?id=KEY"` keys in sync with COMPANY_DETAILS keys.
+   */
+
   const body = document.body;
-  const menuToggle = document.querySelector("[data-menu-toggle]");
-  const menu = document.querySelector("[data-menu]");
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
+
+  /* -------------------------------------------------------------------------- */
+  /* Mobile menu                                                                */
+  /* -------------------------------------------------------------------------- */
+
+  const menuToggle = document.querySelector("[data-menu-toggle]");
+  const menu = document.querySelector("[data-menu]");
 
   const closeMenu = () => {
     if (!menuToggle || !menu) return;
@@ -41,6 +56,10 @@
     }
   });
 
+  /* -------------------------------------------------------------------------- */
+  /* In-page smooth scroll                                                      */
+  /* -------------------------------------------------------------------------- */
+
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
       const targetId = link.getAttribute("href");
@@ -59,14 +78,19 @@
         () => {
           const focusTarget =
             target.querySelector("h1, h2, [tabindex='-1']") || target;
-          if (!focusTarget.hasAttribute("tabindex"))
+          if (!focusTarget.hasAttribute("tabindex")) {
             focusTarget.setAttribute("tabindex", "-1");
+          }
           focusTarget.focus({ preventScroll: true });
         },
         reduceMotion ? 0 : 500,
       );
     });
   });
+
+  /* -------------------------------------------------------------------------- */
+  /* FAQ accordion                                                              */
+  /* -------------------------------------------------------------------------- */
 
   document.querySelectorAll(".accordion-item button").forEach((button) => {
     button.addEventListener("click", () => {
@@ -79,11 +103,20 @@
     });
   });
 
+  /* -------------------------------------------------------------------------- */
+  /* Company directory filters                                                  */
+  /* -------------------------------------------------------------------------- */
+
   const regionFilter = document.querySelector("[data-filter-region]");
   const specialtyFilter = document.querySelector("[data-filter-specialty]");
   const companyList = document.querySelector("[data-company-list]");
   const resultCount = document.querySelector("[data-result-count]");
   const emptyState = document.querySelector("[data-empty-state]");
+
+  const getSelectValues = (select) =>
+    [...(select?.options || [])]
+      .map((option) => option.value)
+      .filter((value) => value && value !== "all");
 
   const getFilterState = () => ({
     region: regionFilter?.value || "all",
@@ -106,8 +139,9 @@
   const syncDetailLinks = (filters = getFilterState()) => {
     const searchParams = new URLSearchParams();
     if (filters.region !== "all") searchParams.set("region", filters.region);
-    if (filters.specialty !== "all")
+    if (filters.specialty !== "all") {
       searchParams.set("specialty", filters.specialty);
+    }
 
     document.querySelectorAll(".company-card .text-button").forEach((link) => {
       const detailUrl = new URL(
@@ -149,29 +183,19 @@
 
   const initializeFilters = () => {
     if (!regionFilter || !specialtyFilter) return;
+
+    const allowedRegions = getSelectValues(regionFilter);
+    const allowedSpecialties = getSelectValues(specialtyFilter);
     const currentParams = new URLSearchParams(window.location.search);
     const initialRegion = currentParams.get("region") || "all";
     const initialSpecialty = currentParams.get("specialty") || "all";
 
-    if (["경기", "서울", "인천"].includes(initialRegion)) {
-      regionFilter.value = initialRegion;
-    } else {
-      regionFilter.value = "all";
-    }
-
-    if (
-      [
-        "주택 정원 조성",
-        "식재 디자인",
-        "데크·휴게 공간",
-        "정원 유지관리",
-        "상업 공간 조경",
-      ].includes(initialSpecialty)
-    ) {
-      specialtyFilter.value = initialSpecialty;
-    } else {
-      specialtyFilter.value = "all";
-    }
+    regionFilter.value = allowedRegions.includes(initialRegion)
+      ? initialRegion
+      : "all";
+    specialtyFilter.value = allowedSpecialties.includes(initialSpecialty)
+      ? initialSpecialty
+      : "all";
 
     filterCompanies();
   };
@@ -180,7 +204,12 @@
   specialtyFilter?.addEventListener("change", filterCompanies);
   initializeFilters();
 
-  const companyDetails = {
+  /* -------------------------------------------------------------------------- */
+  /* Company detail data                                                        */
+  /* Keys must match company-detail.html?id=... and list card links.            */
+  /* -------------------------------------------------------------------------- */
+
+  const COMPANY_DETAILS = {
     blue: {
       name: "푸른정원 조경",
       location: "경기 포천",
@@ -297,30 +326,35 @@
     },
   };
 
-  const companyLinks = document.querySelectorAll("[data-company-link]");
+  const DEFAULT_COMPANY_ID = "maru";
+
   const buildCompaniesUrl = () => {
     const currentParams = new URLSearchParams(window.location.search);
     const nextParams = new URLSearchParams();
 
-    if (currentParams.get("region"))
+    if (currentParams.get("region")) {
       nextParams.set("region", currentParams.get("region"));
-    if (currentParams.get("specialty"))
+    }
+    if (currentParams.get("specialty")) {
       nextParams.set("specialty", currentParams.get("specialty"));
+    }
 
     const queryString = nextParams.toString();
     return queryString ? `companies.html?${queryString}` : "companies.html";
   };
 
-  companyLinks.forEach((link) => {
+  document.querySelectorAll("[data-company-link]").forEach((link) => {
     link.href = buildCompaniesUrl();
   });
 
   const detailRoot = document.querySelector("[data-detail-root]");
 
   if (detailRoot) {
-    const detailId =
-      new URLSearchParams(window.location.search).get("id") || "maru";
-    const detail = companyDetails[detailId] || companyDetails.maru;
+    const requestedId =
+      new URLSearchParams(window.location.search).get("id") ||
+      DEFAULT_COMPANY_ID;
+    const detail =
+      COMPANY_DETAILS[requestedId] || COMPANY_DETAILS[DEFAULT_COMPANY_ID];
     const setText = (selector, value) => {
       document.querySelectorAll(selector).forEach((element) => {
         element.textContent = value;
@@ -376,10 +410,13 @@
     document.title = `${detail.name} | WE:GREEN`;
   }
 
-  const inquiryButtons = document.querySelectorAll("[data-inquiry-button]");
+  /* -------------------------------------------------------------------------- */
+  /* Inquiry reveal (detail page)                                               */
+  /* -------------------------------------------------------------------------- */
+
   const inquiryFeedback = document.querySelector("[data-inquiry-feedback]");
 
-  inquiryButtons.forEach((button) => {
+  document.querySelectorAll("[data-inquiry-button]").forEach((button) => {
     button.addEventListener("click", () => {
       if (!inquiryFeedback) return;
       inquiryFeedback.hidden = false;
@@ -394,6 +431,11 @@
     });
   });
 
+  /* -------------------------------------------------------------------------- */
+  /* Supplier registration form                                                 */
+  /* -------------------------------------------------------------------------- */
+
+  const MAX_PORTFOLIO_IMAGES = 5;
   const registerForm = document.querySelector("[data-register-form]");
   const formSuccess = document.querySelector("[data-form-success]");
   const imageInput = document.querySelector("[data-image-input]");
@@ -430,6 +472,11 @@
       return;
     }
 
+    if (files.length > MAX_PORTFOLIO_IMAGES) {
+      fileFeedback.textContent = `이미지는 최대 ${MAX_PORTFOLIO_IMAGES}장까지 선택할 수 있습니다. 현재 ${files.length}장이 선택되었습니다.`;
+      return;
+    }
+
     const visibleNames = files.slice(0, 3).map((file) => file.name);
     const remainder = files.length - visibleNames.length;
     fileFeedback.textContent = `${files.length}장 선택: ${visibleNames.join(", ")}${
@@ -448,17 +495,29 @@
         field.setAttribute("aria-invalid", String(!field.validity.valid));
 
         if (error) {
-          if (field.validity.valueMissing)
+          if (field.validity.valueMissing) {
             error.textContent = "필수 항목을 입력해 주세요.";
-          else if (field.validity.typeMismatch)
+          } else if (field.validity.typeMismatch) {
             error.textContent = "올바른 형식으로 입력해 주세요.";
-          else if (field.validity.tooShort)
+          } else if (field.validity.tooShort) {
             error.textContent = "20자 이상 입력해 주세요.";
-          else error.textContent = "";
+          } else {
+            error.textContent = "";
+          }
         }
 
         if (!field.validity.valid && !firstInvalid) firstInvalid = field;
       });
+
+    if (
+      imageInput?.files?.length > MAX_PORTFOLIO_IMAGES &&
+      !firstInvalid
+    ) {
+      firstInvalid = imageInput;
+      if (fileFeedback) {
+        fileFeedback.textContent = `이미지는 최대 ${MAX_PORTFOLIO_IMAGES}장까지 선택할 수 있습니다.`;
+      }
+    }
 
     if (!validateSpecialties() && !firstInvalid) {
       firstInvalid = specialtyCheckboxes[0];
@@ -475,6 +534,10 @@
       formSuccess.focus();
     }
   });
+
+  /* -------------------------------------------------------------------------- */
+  /* Scroll reveal                                                              */
+  /* -------------------------------------------------------------------------- */
 
   const revealElements = document.querySelectorAll(".reveal");
 
