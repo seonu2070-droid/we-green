@@ -4,21 +4,15 @@ import { Card } from "../ui/Card";
 
 export interface CompanyCardProps {
   company: Company;
-  delay?: number;
   detailLabel?: string;
 }
 
 export function CompanyCard({
   company,
-  delay,
   detailLabel = "업체 상세보기",
 }: CompanyCardProps) {
   return (
-    <Card
-      className="company-card reveal is-visible"
-      data-delay={delay}
-      data-region={company.region}
-    >
+    <Card className="company-card" data-region={company.region}>
       <div className="company-image">
         <img
           src={company.image}

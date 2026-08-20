@@ -1114,27 +1114,6 @@ p:last-child {
   font-size: 13px;
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 650ms ease,
-    transform 650ms ease;
-}
-
-.reveal[data-delay="1"] {
-  transition-delay: 90ms;
-}
-
-.reveal[data-delay="2"] {
-  transition-delay: 180ms;
-}
-
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 @media (min-width: 600px) {
   .hero-actions,
   .final-actions {
@@ -1372,11 +1351,6 @@ p:last-child {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-  }
-
-  .reveal {
-    opacity: 1;
-    transform: none;
   }
 }
 

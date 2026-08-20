@@ -17,14 +17,7 @@ export const BUSINESS_TYPE_OPTIONS = [
   "프리랜서·예비사업자",
 ] as const;
 
-export const REGISTER_REGION_OPTIONS = [
-  "서울",
-  "경기",
-  "인천",
-  "강원",
-  "충청",
-  "기타 지역",
-] as const;
+export const REGISTER_REGION_OPTIONS = REGION_OPTIONS;
 
 const defaultGallery = [
   "/assets/images/company-1.webp",

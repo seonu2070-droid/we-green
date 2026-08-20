@@ -79,12 +79,8 @@ export function CompaniesPage() {
 
           {companies.length > 0 ? (
             <div className="company-grid directory-grid">
-              {companies.map((company, index) => (
-                <CompanyCard
-                  key={company.id}
-                  company={company}
-                  delay={index % 3}
-                />
+              {companies.map((company) => (
+                <CompanyCard key={company.id} company={company} />
               ))}
             </div>
           ) : (

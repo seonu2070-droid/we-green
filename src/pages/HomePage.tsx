@@ -45,7 +45,7 @@ export function HomePage() {
     <main id="main-content">
       <section className="hero section" id="top" aria-labelledby="hero-title">
         <div className="container hero-grid">
-          <div className="hero-copy reveal is-visible">
+          <div className="hero-copy">
             <p className="eyebrow">LOCAL LANDSCAPE DIRECTORY</p>
             <h1 id="hero-title">
               내 조건에 맞는
@@ -77,7 +77,7 @@ export function HomePage() {
             </ul>
           </div>
 
-          <div className="hero-visual reveal is-visible">
+          <div className="hero-visual">
             <div className="hero-image-wrap">
               <img
                 src="/assets/images/garden-hero.webp"
@@ -136,7 +136,7 @@ export function HomePage() {
         aria-labelledby="problem-title"
       >
         <div className="container">
-          <div className="section-heading reveal is-visible">
+          <div className="section-heading">
             <p className="eyebrow">WHY WE:GREEN</p>
             <h2 id="problem-title">조경업체 찾기, 왜 이렇게 어려울까요?</h2>
             <p>
@@ -145,19 +145,19 @@ export function HomePage() {
             </p>
           </div>
           <div className="problem-grid">
-            <article className="problem-card reveal is-visible">
+            <article className="problem-card">
               <span className="card-number">01</span>
               <h3>흩어진 업체 정보</h3>
               <p>블로그, 지도, SNS를 오가며 업체 정보를 다시 정리해야 합니다.</p>
             </article>
-            <article className="problem-card reveal is-visible">
+            <article className="problem-card">
               <span className="card-number">02</span>
               <h3>어려운 조건 비교</h3>
               <p>
                 가능 지역과 전문 분야가 제각각이라 후보를 좁히기 어렵습니다.
               </p>
             </article>
-            <article className="problem-card reveal is-visible">
+            <article className="problem-card">
               <span className="card-number">03</span>
               <h3>부담스러운 첫 문의</h3>
               <p>
@@ -175,7 +175,7 @@ export function HomePage() {
       >
         <div className="container">
           <div className="value-intro">
-            <div className="section-heading section-heading-left reveal is-visible">
+            <div className="section-heading section-heading-left">
               <p className="eyebrow">CLEARER CHOICE</p>
               <h2 id="value-title">
                 필요한 정보만 모아
@@ -183,13 +183,13 @@ export function HomePage() {
                 비교는 더 명확하게
               </h2>
             </div>
-            <p className="value-lead reveal is-visible">
+            <p className="value-lead">
               WE:GREEN은 단순히 업체를 나열하지 않습니다. 사용자가 문의 전 꼭
               확인해야 할 정보에 집중합니다.
             </p>
           </div>
           <div className="value-grid">
-            <article className="value-card reveal is-visible">
+            <article className="value-card">
               <div className="line-icon" aria-hidden="true">
                 01
               </div>
@@ -201,7 +201,7 @@ export function HomePage() {
                 <span className="tag">가까운 업체</span>
               </div>
             </article>
-            <article className="value-card reveal is-visible">
+            <article className="value-card">
               <div className="line-icon" aria-hidden="true">
                 02
               </div>
@@ -213,7 +213,7 @@ export function HomePage() {
                 <span className="tag">명확한 비교</span>
               </div>
             </article>
-            <article className="value-card reveal is-visible">
+            <article className="value-card">
               <div className="line-icon" aria-hidden="true">
                 03
               </div>
@@ -235,20 +235,20 @@ export function HomePage() {
         aria-labelledby="steps-title"
       >
         <div className="container">
-          <div className="section-heading reveal is-visible">
+          <div className="section-heading">
             <p className="eyebrow">HOW IT WORKS</p>
             <h2 id="steps-title">복잡했던 탐색을 세 단계로</h2>
             <p>WE:GREEN이 준비하는 이용 경험을 미리 살펴보세요.</p>
           </div>
           <ol className="steps-list">
-            <li className="step-item reveal is-visible">
+            <li className="step-item">
               <span className="step-number">1</span>
               <div>
                 <h3>지역과 시공 유형 선택</h3>
                 <p>우리 집 위치와 필요한 작업을 간단히 선택합니다.</p>
               </div>
             </li>
-            <li className="step-item reveal is-visible">
+            <li className="step-item">
               <span className="step-number">2</span>
               <div>
                 <h3>업체와 사례 비교</h3>
@@ -257,7 +257,7 @@ export function HomePage() {
                 </p>
               </div>
             </li>
-            <li className="step-item reveal is-visible">
+            <li className="step-item">
               <span className="step-number">3</span>
               <div>
                 <h3>적합한 업체에 문의</h3>
@@ -275,21 +275,20 @@ export function HomePage() {
       >
         <div className="container">
           <div className="companies-heading">
-            <div className="section-heading section-heading-left reveal is-visible">
+            <div className="section-heading section-heading-left">
               <p className="eyebrow">COMPANY PREVIEW</p>
               <h2 id="companies-title">이런 업체들을 만나보세요</h2>
               <p>지역과 전문 분야가 다른 조경 파트너를 비교해 보세요.</p>
             </div>
-            <Link className="text-link reveal is-visible" to="/companies">
+            <Link className="text-link" to="/companies">
               전체 업체 보기 ↗
             </Link>
           </div>
           <div className="company-grid">
-            {previewCompanies.map((company, index) => (
+            {previewCompanies.map((company) => (
               <CompanyCard
                 key={company.id}
                 company={company}
-                delay={index}
                 detailLabel="자세히 보기"
               />
             ))}
@@ -302,7 +301,7 @@ export function HomePage() {
         id="suppliers"
         aria-labelledby="supplier-title"
       >
-        <div className="container supplier-panel reveal is-visible">
+        <div className="container supplier-panel">
           <div className="supplier-copy">
             <p className="eyebrow eyebrow-light">FOR LANDSCAPERS</p>
             <h2 id="supplier-title">좋은 작업을 더 많은 지역 고객에게</h2>
@@ -330,12 +329,12 @@ export function HomePage() {
 
       <section className="section faq-section" id="faq" aria-labelledby="faq-title">
         <div className="container faq-grid">
-          <div className="section-heading section-heading-left reveal is-visible">
+          <div className="section-heading section-heading-left">
             <p className="eyebrow">FAQ</p>
             <h2 id="faq-title">자주 묻는 질문</h2>
             <p>WE:GREEN이 준비하는 서비스에 대해 알려드릴게요.</p>
           </div>
-          <div className="accordion reveal is-visible">
+          <div className="accordion">
             {FAQ_ITEMS.map((item) => {
               const isOpen = openFaqId === item.id;
               return (
@@ -373,7 +372,7 @@ export function HomePage() {
         className="section final-cta-section"
         aria-labelledby="final-cta-title"
       >
-        <div className="container final-cta reveal is-visible">
+        <div className="container final-cta">
           <p className="eyebrow">A BETTER WAY TO CHOOSE</p>
           <h2 id="final-cta-title">
             좋은 정원의 시작,

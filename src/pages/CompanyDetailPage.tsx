@@ -56,7 +56,7 @@ export function CompanyDetailPage() {
 
       <section className="detail-hero">
         <div className="container detail-hero-grid">
-          <div className="detail-image reveal is-visible">
+          <div className="detail-image">
             <img
               src={company.image}
               width={900}
@@ -64,7 +64,7 @@ export function CompanyDetailPage() {
               alt={`${company.name} 대표 시공 정원`}
             />
           </div>
-          <div className="detail-summary reveal is-visible">
+          <div className="detail-summary">
             <div className="company-meta">
               <span>{company.location}</span>
               <span>{company.category}</span>
@@ -100,13 +100,13 @@ export function CompanyDetailPage() {
       <section className="section detail-content-section">
         <div className="container detail-layout">
           <div className="detail-main">
-            <article className="detail-block reveal is-visible">
+            <article className="detail-block">
               <p className="eyebrow">ABOUT</p>
               <h2>공간의 쓰임에서 시작하는 정원</h2>
               <p>{company.description}</p>
             </article>
 
-            <article className="detail-block reveal is-visible">
+            <article className="detail-block">
               <p className="eyebrow">SPECIALTY</p>
               <h2>주요 전문 분야</h2>
               <ul className="service-chip-list">
@@ -116,7 +116,7 @@ export function CompanyDetailPage() {
               </ul>
             </article>
 
-            <article className="detail-block reveal is-visible">
+            <article className="detail-block">
               <p className="eyebrow">PORTFOLIO</p>
               <h2>대표 시공 사례</h2>
               <div className="portfolio-grid">
@@ -130,7 +130,7 @@ export function CompanyDetailPage() {
               </div>
             </article>
 
-            <article className="detail-block inquiry-block reveal is-visible">
+            <article className="detail-block inquiry-block">
               <p className="eyebrow">INQUIRY</p>
               <h2>업체에 문의하기</h2>
               <p>
@@ -162,7 +162,7 @@ export function CompanyDetailPage() {
             </article>
           </div>
 
-          <aside className="detail-aside reveal is-visible" aria-label="업체 요약">
+          <aside className="detail-aside" aria-label="업체 요약">
             <strong>빠른 정보</strong>
             <ul>
               <li>
