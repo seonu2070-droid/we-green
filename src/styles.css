@@ -1114,27 +1114,6 @@ p:last-child {
   font-size: 13px;
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 650ms ease,
-    transform 650ms ease;
-}
-
-.reveal[data-delay="1"] {
-  transition-delay: 90ms;
-}
-
-.reveal[data-delay="2"] {
-  transition-delay: 180ms;
-}
-
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 @media (min-width: 600px) {
   .hero-actions,
   .final-actions {
@@ -1372,11 +1351,6 @@ p:last-child {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-  }
-
-  .reveal {
-    opacity: 1;
-    transform: none;
   }
 }
 
@@ -2087,4 +2061,87 @@ p:last-child {
     position: sticky;
     top: calc(var(--header-height) + 24px);
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* React MVP additions                                                        */
+/* -------------------------------------------------------------------------- */
+
+.nav-user {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted, #4d5c56);
+  padding: 0 0.25rem;
+}
+
+.primary-nav .nav-links a.is-active,
+.primary-nav .nav-links a[aria-current='page'] {
+  color: var(--brand, #2f5d50);
+  font-weight: 700;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 12rem;
+  color: var(--text-muted, #4d5c56);
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 3px solid rgba(47, 93, 80, 0.18);
+  border-top-color: var(--brand, #2f5d50);
+  animation: wegreen-spin 0.8s linear infinite;
+}
+
+@keyframes wegreen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.form-banner {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.925rem;
+}
+
+.form-banner-error {
+  background: #fdebec;
+  color: #8a1f2b;
+  border: 1px solid #f3c4ca;
+}
+
+.form-footer-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted, #4d5c56);
+}
+
+.form-footer-note a {
+  color: var(--brand, #2f5d50);
+  font-weight: 600;
+}
+
+.empty-state {
+  display: block;
+}
+
+.stack-gap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.page-hero-actions {
+  margin-top: 1.5rem;
 }
