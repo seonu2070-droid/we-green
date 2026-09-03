@@ -10,7 +10,11 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+dist-server
 *.local
+.env
+server/data/companies.json
+server/data/companies.json*.tmp
 
 # Editor directories and files
 .vscode/*

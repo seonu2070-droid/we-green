@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-server
+.git
+.env
+server/data/companies.json
+*.log
+*.zip
+legacy

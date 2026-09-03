@@ -16,6 +16,7 @@ import { Select } from "../components/ui/Select";
 import { TextArea } from "../components/ui/TextArea";
 import { LoadingState } from "../components/ui/LoadingState";
 import { PageHero } from "../components/layout/PageHero";
+import { ApiError } from "../data/api";
 
 const initialValues: RegisterFormValues = {
   companyName: "",
@@ -31,12 +32,24 @@ const initialValues: RegisterFormValues = {
 
 export function RegisterPage() {
   usePageTitle("무료 업체 등록 | WE:GREEN");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAuthLoading } = useAuth();
   const { registerCompany, isRegistering } = useCompanies();
   const navigate = useNavigate();
   const [values, setValues] = useState<RegisterFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [formError, setFormError] = useState("");
+
+  if (isAuthLoading) {
+    return (
+      <main id="main-content">
+        <section className="section">
+          <div className="container">
+            <LoadingState label="로그인 정보를 확인하는 중..." />
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: "/register" }} />;
@@ -64,8 +77,13 @@ export function RegisterPage() {
     try {
       const company = await registerCompany(values);
       navigate(`/register/complete/${company.id}`, { replace: true });
-    } catch {
-      setFormError("등록 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setErrors(error.fields);
+        setFormError(error.message);
+      } else {
+        setFormError("등록 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      }
     }
   };
 
@@ -74,7 +92,7 @@ export function RegisterPage() {
       <PageHero
         eyebrow="FOR LANDSCAPERS"
         title="무료 업체 등록"
-        description="업체 정보를 등록하면 localStorage에 저장되어 새로고침 후에도 목록에서 확인할 수 있습니다."
+        description="업체 정보를 등록하면 서버에 저장되어 어느 기기에서든 목록과 상세 화면에서 확인할 수 있습니다."
       />
 
       <section className="register-section" id="register-form">
@@ -99,10 +117,7 @@ export function RegisterPage() {
             </ol>
             <div className="register-note">
               <strong>저장 안내</strong>
-              <p>
-                백엔드 없이 브라우저 localStorage에 저장됩니다. 이 기기에서만
-                데이터가 유지됩니다.
-              </p>
+              <p>제출한 업체 정보는 WE:GREEN 서버에 안전하게 저장됩니다.</p>
             </div>
           </div>
 

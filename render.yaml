@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: we-green
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8787
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://we-green.onrender.com
+      - key: DATA_FILE
+        value: /var/data/companies.json
+      - key: DEMO_USER_EMAIL
+        value: partner@wegreen.test
+      - key: DEMO_USER_PASSWORD
+        sync: false
+      - key: DEMO_USER_NAME
+        value: WE:GREEN 파트너
+    disk:
+      name: we-green-data
+      mountPath: /var/data
+      sizeGB: 1

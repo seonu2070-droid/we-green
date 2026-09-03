@@ -26,11 +26,17 @@ export interface CompanyFilters {
   specialty: string;
 }
 
-/** 로컬 스토리지 기반 로그인 사용자 */
+/** JWT 세션에 포함되는 로그인 사용자 */
 export interface AuthUser {
   email: string;
   name: string;
   loggedInAt: string;
+}
+
+/** API 로그인 성공 응답 */
+export interface AuthSession {
+  user: AuthUser;
+  accessToken: string;
 }
 
 /** 로그인 폼 입력값 */

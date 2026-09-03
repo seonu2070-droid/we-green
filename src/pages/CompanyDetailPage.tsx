@@ -4,11 +4,12 @@ import { useCompanies } from "../context/CompanyContext";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
+import { LoadingState } from "../components/ui/LoadingState";
 
 export function CompanyDetailPage() {
   const { id = "" } = useParams();
   const [searchParams] = useSearchParams();
-  const { getCompanyById } = useCompanies();
+  const { getCompanyById, isLoading, error, reloadCompanies } = useCompanies();
   const company = getCompanyById(id);
   const [inquiryOpen, setInquiryOpen] = useState(false);
 
@@ -25,6 +26,33 @@ export function CompanyDetailPage() {
     const query = params.toString();
     return query ? `/companies?${query}` : "/companies";
   }, [searchParams]);
+
+  if (isLoading) {
+    return (
+      <main id="main-content">
+        <section className="section">
+          <div className="container">
+            <LoadingState label="업체 상세 정보를 불러오는 중..." />
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main id="main-content">
+        <section className="section">
+          <div className="container stack-gap">
+            <EmptyState title="업체 정보를 불러오지 못했습니다." description={error} />
+            <Button onClick={() => void reloadCompanies()} variant="secondary">
+              다시 시도
+            </Button>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   if (!company) {
     return (

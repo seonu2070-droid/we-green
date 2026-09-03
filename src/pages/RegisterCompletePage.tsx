@@ -4,10 +4,11 @@ import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PageHero } from "../components/layout/PageHero";
+import { LoadingState } from "../components/ui/LoadingState";
 
 export function RegisterCompletePage() {
   const { id = "" } = useParams();
-  const { getCompanyById } = useCompanies();
+  const { getCompanyById, isLoading } = useCompanies();
   const company = getCompanyById(id);
 
   usePageTitle(
@@ -15,6 +16,18 @@ export function RegisterCompletePage() {
       ? `등록 완료 · ${company.name} | WE:GREEN`
       : "등록 완료 | WE:GREEN",
   );
+
+  if (isLoading) {
+    return (
+      <main id="main-content">
+        <section className="section">
+          <div className="container">
+            <LoadingState label="등록 결과를 확인하는 중..." />
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   if (!company) {
     return (
@@ -41,8 +54,8 @@ export function RegisterCompletePage() {
         title="업체 등록이 완료되었습니다"
         description={
           <>
-            <strong>{company.name}</strong> 정보가 localStorage에
-            저장되었습니다. 목록과 상세 페이지에서 바로 확인할 수 있습니다.
+            <strong>{company.name}</strong> 정보가 서버에 저장되었습니다. 목록과
+            상세 페이지에서 바로 확인할 수 있습니다.
           </>
         }
       >

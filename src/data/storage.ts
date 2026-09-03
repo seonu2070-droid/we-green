@@ -1,40 +1,43 @@
-import type { AuthUser, Company } from "../types";
+import type { AuthSession } from "../types";
 
-const AUTH_KEY = "wegreen:auth";
-const COMPANIES_KEY = "wegreen:user-companies";
+const AUTH_SESSION_KEY = "wegreen:auth-session";
+const sessionClearedListeners = new Set<() => void>();
 
-function safeParse<T>(raw: string | null): T | null {
+export function loadAuthSession(): AuthSession | null {
+  const raw = localStorage.getItem(AUTH_SESSION_KEY);
   if (!raw) return null;
+
   try {
-    return JSON.parse(raw) as T;
+    const session: unknown = JSON.parse(raw);
+    if (
+      typeof session === "object" &&
+      session !== null &&
+      "accessToken" in session &&
+      typeof session.accessToken === "string" &&
+      "user" in session &&
+      typeof session.user === "object" &&
+      session.user !== null
+    ) {
+      return session as AuthSession;
+    }
   } catch {
-    return null;
+    // 손상된 세션은 아래에서 제거합니다.
   }
+
+  localStorage.removeItem(AUTH_SESSION_KEY);
+  return null;
 }
 
-export function loadAuthUser(): AuthUser | null {
-  return safeParse<AuthUser>(localStorage.getItem(AUTH_KEY));
+export function saveAuthSession(session: AuthSession): void {
+  localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
 }
 
-export function saveAuthUser(user: AuthUser): void {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+export function clearAuthSession(): void {
+  localStorage.removeItem(AUTH_SESSION_KEY);
+  sessionClearedListeners.forEach((listener) => listener());
 }
 
-export function clearAuthUser(): void {
-  localStorage.removeItem(AUTH_KEY);
-}
-
-export function loadUserCompanies(): Company[] {
-  const parsed = safeParse<Company[]>(localStorage.getItem(COMPANIES_KEY));
-  return Array.isArray(parsed) ? parsed : [];
-}
-
-export function saveUserCompanies(companies: Company[]): void {
-  localStorage.setItem(COMPANIES_KEY, JSON.stringify(companies));
-}
-
-export function appendUserCompany(company: Company): Company[] {
-  const next = [company, ...loadUserCompanies()];
-  saveUserCompanies(next);
-  return next;
+export function subscribeToAuthSessionCleared(listener: () => void): () => void {
+  sessionClearedListeners.add(listener);
+  return () => sessionClearedListeners.delete(listener);
 }

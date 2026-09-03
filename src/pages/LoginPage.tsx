@@ -8,6 +8,7 @@ import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { LoadingState } from "../components/ui/LoadingState";
 import { PageHero } from "../components/layout/PageHero";
+import { ApiError } from "../data/api";
 
 interface LocationState {
   from?: string;
@@ -46,8 +47,13 @@ export function LoginPage() {
     try {
       await login(values);
       navigate(from, { replace: true });
-    } catch {
-      setFormError("로그인에 실패했습니다. 다시 시도해 주세요.");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setErrors(error.fields);
+        setFormError(error.message);
+      } else {
+        setFormError("로그인에 실패했습니다. 다시 시도해 주세요.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -58,7 +64,7 @@ export function LoginPage() {
       <PageHero
         eyebrow="ACCOUNT"
         title="로그인"
-        description="실제 인증 서버 없이 localStorage로 로그인 상태를 시뮬레이션합니다. 임의의 이메일과 비밀번호(4자 이상)로 체험할 수 있습니다."
+        description="서버에서 계정 정보를 확인하고 발급한 JWT로 로그인 상태를 안전하게 이어갑니다."
       />
 
       <section className="register-section">
@@ -73,7 +79,7 @@ export function LoginPage() {
             <div className="register-note">
               <strong>체험용 계정</strong>
               <p>
-                이메일 예: partner@wegreen.test / 비밀번호: 아무 값 4자 이상
+                이메일: partner@wegreen.test / 비밀번호: green1234
               </p>
             </div>
           </div>

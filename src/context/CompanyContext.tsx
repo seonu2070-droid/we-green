@@ -2,18 +2,21 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import type { Company, CompanyFilters, RegisterFormValues } from "../types";
-import { MOCK_COMPANIES, createCompanyFromRegistration } from "../data/companies";
-import { appendUserCompany, loadUserCompanies } from "../data/storage";
+import { createCompanyWithApi, getCompanies } from "../data/api";
 import { filterCompaniesBy } from "../utils/companyFilters";
 
 interface CompanyContextValue {
   companies: Company[];
+  isLoading: boolean;
   isRegistering: boolean;
+  error: string;
+  reloadCompanies: () => Promise<void>;
   getCompanyById: (id: string) => Company | undefined;
   filterCompanies: (filters: CompanyFilters) => Company[];
   registerCompany: (values: RegisterFormValues) => Promise<Company>;
@@ -26,15 +29,30 @@ interface CompanyProviderProps {
 const CompanyContext = createContext<CompanyContextValue | null>(null);
 
 export function CompanyProvider({ children }: CompanyProviderProps) {
-  const [userCompanies, setUserCompanies] = useState<Company[]>(() =>
-    loadUserCompanies(),
-  );
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [error, setError] = useState("");
 
-  const companies = useMemo(
-    () => [...userCompanies, ...MOCK_COMPANIES],
-    [userCompanies],
-  );
+  const reloadCompanies = useCallback(async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      setCompanies(await getCompanies());
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "업체 정보를 불러오지 못했습니다.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void reloadCompanies();
+  }, [reloadCompanies]);
 
   const getCompanyById = useCallback(
     (id: string) => companies.find((company) => company.id === id),
@@ -49,10 +67,8 @@ export function CompanyProvider({ children }: CompanyProviderProps) {
   const registerCompany = useCallback(async (values: RegisterFormValues) => {
     setIsRegistering(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 700));
-      const company = createCompanyFromRegistration(values);
-      const next = appendUserCompany(company);
-      setUserCompanies(next);
+      const company = await createCompanyWithApi(values);
+      setCompanies((current) => [company, ...current]);
       return company;
     } finally {
       setIsRegistering(false);
@@ -62,14 +78,20 @@ export function CompanyProvider({ children }: CompanyProviderProps) {
   const value = useMemo<CompanyContextValue>(
     () => ({
       companies,
+      isLoading,
       isRegistering,
+      error,
+      reloadCompanies,
       getCompanyById,
       filterCompanies,
       registerCompany,
     }),
     [
       companies,
+      isLoading,
       isRegistering,
+      error,
+      reloadCompanies,
       getCompanyById,
       filterCompanies,
       registerCompany,

@@ -10,11 +10,13 @@ import { CompanyCard } from "../components/company/CompanyCard";
 import { EmptyState } from "../components/ui/EmptyState";
 import { PageHero } from "../components/layout/PageHero";
 import type { CompanyFilters } from "../types";
+import { LoadingState } from "../components/ui/LoadingState";
+import { Button } from "../components/ui/Button";
 
 export function CompaniesPage() {
   usePageTitle("업체 찾기 | WE:GREEN");
   const [searchParams, setSearchParams] = useSearchParams();
-  const { filterCompanies } = useCompanies();
+  const { filterCompanies, isLoading, error, reloadCompanies } = useCompanies();
   const filters = readFiltersFromSearchParams(searchParams);
   const companies = filterCompanies(filters);
 
@@ -77,7 +79,16 @@ export function CompaniesPage() {
             </div>
           </div>
 
-          {companies.length > 0 ? (
+          {isLoading ? (
+            <LoadingState label="업체 정보를 불러오는 중..." />
+          ) : error ? (
+            <div className="stack-gap">
+              <EmptyState title="업체 정보를 불러오지 못했습니다." description={error} />
+              <Button onClick={() => void reloadCompanies()} variant="secondary">
+                다시 시도
+              </Button>
+            </div>
+          ) : companies.length > 0 ? (
             <div className="company-grid directory-grid">
               {companies.map((company) => (
                 <CompanyCard key={company.id} company={company} />
