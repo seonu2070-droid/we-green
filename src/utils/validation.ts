@@ -62,3 +62,11 @@ export function validateRegisterForm(values: RegisterFormValues): FormErrors {
 
   return errors;
 }
+
+export function validateRecommendMessage(message: string): string {
+  const trimmed = message.trim();
+  if (!trimmed) return "찾으시는 내용을 입력해 주세요.";
+  if (trimmed.length < 5) return "5자 이상 입력해 주세요.";
+  if (trimmed.length > 300) return "300자 이하로 입력해 주세요.";
+  return "";
+}

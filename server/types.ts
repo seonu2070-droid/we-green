@@ -25,3 +25,8 @@ export interface AuthUser {
   name: string;
   loggedInAt: string;
 }
+
+export interface Recommendation {
+  companyId: string;
+  reason: string;
+}

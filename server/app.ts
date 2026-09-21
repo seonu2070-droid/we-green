@@ -15,8 +15,14 @@ import { createCompany } from "./company-mapper.ts";
 import { CompanyRepository } from "./company-repository.ts";
 import { config } from "./config.ts";
 import {
+  RecommendationServiceUnavailableError,
+  RecommendationUpstreamError,
+  getCompanyRecommendations,
+} from "./openai.ts";
+import {
   formatValidationErrors,
   loginSchema,
+  recommendSchema,
   registerCompanySchema,
 } from "./schemas.ts";
 import type { AuthUser } from "./types.ts";
@@ -111,6 +117,41 @@ export function createApp(repository = new CompanyRepository()) {
       response.status(201).json({ data: { company } });
     },
   );
+
+  app.post("/api/recommend", async (request, response) => {
+    const input = recommendSchema.parse(request.body);
+    const companies = await repository.findAll();
+
+    try {
+      const recommendations = await getCompanyRecommendations(
+        input.message,
+        companies,
+      );
+      const companyById = new Map(companies.map((company) => [company.id, company]));
+      response.json({
+        data: {
+          recommendations: recommendations.map((recommendation) => ({
+            company: companyById.get(recommendation.companyId),
+            reason: recommendation.reason,
+          })),
+        },
+      });
+    } catch (error) {
+      if (error instanceof RecommendationServiceUnavailableError) {
+        response.status(503).json({
+          error: { code: "AI_UNAVAILABLE", message: error.message },
+        });
+        return;
+      }
+      if (error instanceof RecommendationUpstreamError) {
+        response.status(502).json({
+          error: { code: "AI_UPSTREAM_ERROR", message: error.message },
+        });
+        return;
+      }
+      throw error;
+    }
+  });
 
   app.use("/api", (_request, response) => {
     response.status(404).json({

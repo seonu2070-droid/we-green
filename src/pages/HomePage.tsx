@@ -1,3 +1,4 @@
+import { AiRecommendSection } from "../components/home/AiRecommendSection";
 import { CompanyPreviewSection } from "../components/home/CompanyPreviewSection";
 import { FaqSection } from "../components/home/FaqSection";
 import { FinalCtaSection } from "../components/home/FinalCtaSection";
@@ -19,6 +20,7 @@ export function HomePage() {
   return (
     <main id="main-content">
       <HeroSection />
+      <AiRecommendSection />
       <ProblemSection />
       <ValueSection />
       <StepsSection />

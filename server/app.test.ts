@@ -1,10 +1,22 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { createApp } from "./app.ts";
 import { CompanyRepository } from "./company-repository.ts";
 import { config } from "./config.ts";
 import { SEED_COMPANIES } from "./data/seed-companies.ts";
+import {
+  RecommendationServiceUnavailableError,
+  RecommendationUpstreamError,
+  getCompanyRecommendations,
+} from "./openai.ts";
 import { createTempDataFilePath, removeDataFile } from "./test-utils.ts";
+
+vi.mock("./openai.ts", async () => {
+  const actual = await vi.importActual<typeof import("./openai.ts")>(
+    "./openai.ts",
+  );
+  return { ...actual, getCompanyRecommendations: vi.fn() };
+});
 
 // 각 테스트마다 완전히 독립된 데이터 파일을 쓰는 저장소로 앱을 새로 만든다.
 let app: ReturnType<typeof createApp>;
@@ -190,6 +202,64 @@ describe("POST /api/companies", () => {
     expect(listResponse.body.data.companies[0].name).toBe(
       validRegistration.companyName,
     );
+  });
+});
+
+describe("POST /api/recommend", () => {
+  afterEach(() => {
+    vi.mocked(getCompanyRecommendations).mockReset();
+  });
+
+  it("rejects a message shorter than 5 characters", async () => {
+    const response = await request(app)
+      .post("/api/recommend")
+      .send({ message: "짧음" });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+    expect(getCompanyRecommendations).not.toHaveBeenCalled();
+  });
+
+  it("returns matched companies with reasons", async () => {
+    const seeded = SEED_COMPANIES[0];
+    vi.mocked(getCompanyRecommendations).mockResolvedValueOnce([
+      { companyId: seeded.id, reason: "테스트 이유" },
+    ]);
+
+    const response = await request(app)
+      .post("/api/recommend")
+      .send({ message: "마당이 있는 집에 어울리는 정원을 원해요" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.recommendations).toEqual([
+      { company: expect.objectContaining({ id: seeded.id }), reason: "테스트 이유" },
+    ]);
+  });
+
+  it("returns 503 when the AI feature is not configured", async () => {
+    vi.mocked(getCompanyRecommendations).mockRejectedValueOnce(
+      new RecommendationServiceUnavailableError("설정되지 않았습니다."),
+    );
+
+    const response = await request(app)
+      .post("/api/recommend")
+      .send({ message: "테스트 문의 내용입니다" });
+
+    expect(response.status).toBe(503);
+    expect(response.body.error.code).toBe("AI_UNAVAILABLE");
+  });
+
+  it("returns 502 when the upstream AI call fails", async () => {
+    vi.mocked(getCompanyRecommendations).mockRejectedValueOnce(
+      new RecommendationUpstreamError("업스트림 오류"),
+    );
+
+    const response = await request(app)
+      .post("/api/recommend")
+      .send({ message: "테스트 문의 내용입니다" });
+
+    expect(response.status).toBe(502);
+    expect(response.body.error.code).toBe("AI_UPSTREAM_ERROR");
   });
 });
 

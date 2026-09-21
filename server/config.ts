@@ -27,4 +27,5 @@ export const config = {
     password: process.env.DEMO_USER_PASSWORD ?? "green1234",
     name: process.env.DEMO_USER_NAME ?? "WE:GREEN 파트너",
   },
+  openaiApiKey: process.env.OPENAI_API_KEY,
 } as const;

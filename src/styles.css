@@ -671,6 +671,35 @@ p:last-child {
   font-weight: 700;
 }
 
+.ai-recommend-section {
+  background: var(--color-background);
+}
+
+.ai-recommend-form {
+  display: grid;
+  max-width: 640px;
+  margin: 0 auto 36px;
+  padding: 28px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-medium);
+  gap: 16px;
+}
+
+.ai-recommend-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-recommend-reason {
+  padding: 10px 14px;
+  color: var(--color-primary-dark);
+  background: rgb(183 201 168 / 24%);
+  border-radius: var(--radius-small);
+  font-size: 13px;
+}
+
 .companies-section {
   background: linear-gradient(180deg, var(--color-background), #fff);
 }

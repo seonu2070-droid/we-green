@@ -51,6 +51,14 @@ export const registerCompanySchema = z.object({
   }),
 });
 
+export const recommendSchema = z.object({
+  message: z
+    .string({ error: "찾으시는 내용을 입력해 주세요." })
+    .trim()
+    .min(5, "5자 이상 입력해 주세요.")
+    .max(300, "300자 이하로 입력해 주세요."),
+});
+
 export function formatValidationErrors(error: z.ZodError) {
   return Object.fromEntries(
     error.issues.map((issue) => [issue.path.join(".") || "form", issue.message]),

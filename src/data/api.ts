@@ -3,6 +3,7 @@ import type {
   AuthUser,
   Company,
   LoginFormValues,
+  Recommendation,
   RegisterFormValues,
 } from "../types";
 import { clearAuthSession, loadAuthSession } from "./storage";
@@ -96,4 +97,13 @@ export async function createCompanyWithApi(
     { method: "POST", body: JSON.stringify(values) },
   );
   return response.data.company;
+}
+
+export async function getRecommendations(
+  message: string,
+): Promise<Recommendation[]> {
+  const response = await apiRequest<{
+    data: { recommendations: Recommendation[] };
+  }>("/recommend", { method: "POST", body: JSON.stringify({ message }) });
+  return response.data.recommendations;
 }

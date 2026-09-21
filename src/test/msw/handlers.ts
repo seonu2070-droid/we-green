@@ -113,4 +113,28 @@ export const handlers = [
       { status: 201 },
     );
   }),
+
+  http.post("/api/recommend", async ({ request }) => {
+    const body = (await request.json()) as { message?: string };
+    if (!body.message || body.message.trim().length < 5) {
+      return HttpResponse.json(
+        {
+          error: {
+            code: "VALIDATION_ERROR",
+            message: "입력값을 확인해 주세요.",
+            fields: { message: "5자 이상 입력해 주세요." },
+          },
+        },
+        { status: 400 },
+      );
+    }
+
+    return HttpResponse.json({
+      data: {
+        recommendations: [
+          { company: FIXTURE_COMPANIES[0], reason: "테스트 추천 이유입니다." },
+        ],
+      },
+    });
+  }),
 ];

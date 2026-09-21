@@ -70,3 +70,9 @@ export interface FaqItem {
   question: string;
   answer: string;
 }
+
+/** AI 업체 추천 결과 항목 */
+export interface Recommendation {
+  company: Company;
+  reason: string;
+}

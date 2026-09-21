@@ -21,3 +21,5 @@ services:
         sync: false
       - key: DEMO_USER_NAME
         value: WE:GREEN 파트너
+      - key: OPENAI_API_KEY
+        sync: false
