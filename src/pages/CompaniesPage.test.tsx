@@ -6,8 +6,43 @@ import { mswServer } from "../test/msw/server";
 import { FIXTURE_COMPANIES } from "../test/msw/fixtures";
 import { renderWithProviders } from "../test/renderWithProviders";
 import { CompaniesPage } from "./CompaniesPage";
+import { SPECIALTY_OPTIONS } from "../data/companies";
 
 describe("CompaniesPage", () => {
+  it("keeps service-only and category-only matches when filters change", async () => {
+    const user = userEvent.setup();
+    const specialty = SPECIALTY_OPTIONS[1];
+    const matches = FIXTURE_COMPANIES.filter((company) => company.services.includes(specialty) || company.category === specialty);
+    expect(matches).toHaveLength(2);
+    const response = await fetch(`/api/companies?specialty=${encodeURIComponent(specialty)}`);
+    const body = await response.json();
+    expect(body.data.companies.map((company: { id: string }) => company.id)).toEqual(matches.map((company) => company.id));
+    renderWithProviders(<CompaniesPage />, { route: `/companies?specialty=${encodeURIComponent(specialty)}` });
+    for (const company of matches) {
+      expect(await screen.findByRole("heading", { name: company.name })).toBeInTheDocument();
+    }
+    const [regionSelect, specialtySelect] = screen.getAllByRole("combobox");
+    await user.selectOptions(regionSelect, matches[0].region);
+    for (const company of matches) {
+      expect(screen.getByRole("heading", { name: company.name })).toBeInTheDocument();
+    }
+    await user.selectOptions(specialtySelect, "all");
+    await user.selectOptions(specialtySelect, specialty);
+    for (const company of matches) {
+      expect(screen.getByRole("heading", { name: company.name })).toBeInTheDocument();
+    }
+    expect(screen.queryByRole("heading", { name: FIXTURE_COMPANIES[1].name })).not.toBeInTheDocument();
+    await user.selectOptions(regionSelect, FIXTURE_COMPANIES[1].region);
+    for (const company of matches) {
+      expect(screen.queryByRole("heading", { name: company.name })).not.toBeInTheDocument();
+    }
+    await user.selectOptions(regionSelect, "all");
+    for (const company of matches) {
+      expect(screen.getByRole("heading", { name: company.name })).toBeInTheDocument();
+    }
+    expect(screen.queryByRole("heading", { name: FIXTURE_COMPANIES[1].name })).not.toBeInTheDocument();
+  });
+
   it("shows a loading state before the list arrives", () => {
     renderWithProviders(<CompaniesPage />, { route: "/companies" });
     expect(screen.getByText("업체 정보를 불러오는 중...")).toBeInTheDocument();

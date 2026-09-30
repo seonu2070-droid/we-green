@@ -128,6 +128,11 @@ MVP는 지역·전문 분야 드롭다운으로만 업체를 걸러볼 수 있�
 
 ### `GET /api/companies`
 
+The API uses the same filters as the company directory. `region` matches the
+company's region exactly; `specialty` matches any entry in `specialties`, the
+`category`, or any entry in `services`. When both filters are supplied, both
+must match. An omitted, empty, or `all` filter imposes no restriction.
+
 업체 목록을 반환합니다. `region`, `specialty` 쿼리로 선택적으로 필터링할 수 있습니다.
 
 ```text
