@@ -69,6 +69,7 @@ export function RegisterPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isRegistering) return;
     const nextErrors = validateRegisterForm(values);
     setErrors(nextErrors);
     setFormError("");
@@ -297,13 +298,12 @@ export function RegisterPage() {
               </p>
             ) : null}
 
+            <Button type="submit" wide aria-disabled={isRegistering}>
+              등록 신청서 제출하기
+            </Button>
             {isRegistering ? (
               <LoadingState label="등록 정보를 저장하는 중..." />
-            ) : (
-              <Button type="submit" wide>
-                등록 신청서 제출하기
-              </Button>
-            )}
+            ) : null}
           </form>
         </div>
       </section>

@@ -7,7 +7,7 @@ import {
   getCompanyRecommendations,
 } from "./openai.ts";
 
-const companies = SEED_COMPANIES.slice(0, 2);
+const companies = SEED_COMPANIES;
 const mutableConfig = config as { openaiApiKey?: string };
 const originalApiKey = mutableConfig.openaiApiKey;
 
@@ -98,8 +98,8 @@ describe("getCompanyRecommendations", () => {
           {
             message: {
               content: JSON.stringify({
-                recommendations: Array.from({ length: 5 }, () => ({
-                  companyId: companies[0].id,
+                recommendations: companies.slice(0, 5).map((company) => ({
+                  companyId: company.id,
                   reason: "이유",
                 })),
               }),
@@ -111,6 +111,34 @@ describe("getCompanyRecommendations", () => {
 
     const result = await getCompanyRecommendations("아무 내용", companies);
     expect(result).toHaveLength(3);
+    expect(new Set(result.map((item) => item.companyId)).size).toBe(3);
+  });
+
+  it("returns a company only once when the model repeats the same companyId", async () => {
+    mockFetchOnce({
+      json: async () => ({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                recommendations: [
+                  { companyId: companies[0].id, reason: "첫 번째 이유" },
+                  { companyId: companies[0].id, reason: "중복된 이유" },
+                  { companyId: companies[1].id, reason: "다른 업체 이유" },
+                ],
+              }),
+            },
+          },
+        ],
+      }),
+    });
+
+    const result = await getCompanyRecommendations("아무 내용", companies);
+
+    expect(result).toEqual([
+      { companyId: companies[0].id, reason: "첫 번째 이유" },
+      { companyId: companies[1].id, reason: "다른 업체 이유" },
+    ]);
   });
 
   it("throws RecommendationUpstreamError when the OpenAI response is not ok", async () => {

@@ -61,6 +61,7 @@ Vite 개발 서버가 `/api` 요청을 API 서버로 프록시합니다.
 - `DEMO_USER_PASSWORD`: 데모 로그인 비밀번호.
 - `DEMO_USER_NAME`: 로그인 사용자 표시 이름.
 - `OPENAI_API_KEY`: AI 업체 추천 기능에 사용하는 OpenAI API 키(선택). 비워 두면 `/api/recommend`가 `503 AI_UNAVAILABLE`을 반환하고, 나머지 기능은 그대로 동작합니다.
+- `OPENAI_MODEL`: AI 추천에 사용할 OpenAI 모델명(선택). 기본값 `gpt-4o-mini`.
 
 ## AI 업체 추천 기능
 

@@ -1,7 +1,6 @@
 import { config } from "./config.ts";
 import type { Company, Recommendation } from "./types.ts";
 
-const OPENAI_MODEL = "gpt-4o-mini";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 const REQUEST_TIMEOUT_MS = 10_000;
 const MAX_RECOMMENDATIONS = 3;
@@ -59,7 +58,7 @@ export async function getCompanyRecommendations(
   }
 
   const payload = {
-    model: OPENAI_MODEL,
+    model: config.openaiModel,
     temperature: 0.3,
     response_format: { type: "json_object" },
     messages: [
@@ -111,10 +110,13 @@ export async function getCompanyRecommendations(
   }
 
   const validIds = new Set(companies.map((company) => company.id));
+  const pickedIds = new Set<string>();
   const recommendations: Recommendation[] = [];
   for (const item of parsed.recommendations ?? []) {
     if (typeof item.companyId !== "string" || !validIds.has(item.companyId)) continue;
+    if (pickedIds.has(item.companyId)) continue;
     if (typeof item.reason !== "string" || !item.reason.trim()) continue;
+    pickedIds.add(item.companyId);
     recommendations.push({ companyId: item.companyId, reason: item.reason.trim() });
     if (recommendations.length >= MAX_RECOMMENDATIONS) break;
   }

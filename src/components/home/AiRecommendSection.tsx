@@ -19,6 +19,7 @@ export function AiRecommendSection() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isLoading) return;
     const validationError = validateRecommendMessage(message);
     setFieldError(validationError);
     setRequestError("");
@@ -38,6 +39,13 @@ export function AiRecommendSection() {
       setIsLoading(false);
     }
   };
+
+  const statusMessage =
+    isLoading || !recommendations
+      ? ""
+      : recommendations.length > 0
+        ? `추천 업체 ${recommendations.length}곳을 찾았습니다.`
+        : "조건에 맞는 업체를 찾지 못했습니다.";
 
   return (
     <section
@@ -72,32 +80,38 @@ export function AiRecommendSection() {
             </p>
           ) : null}
 
+          <Button type="submit" wide aria-disabled={isLoading}>
+            AI에게 추천받기
+          </Button>
+
           {isLoading ? (
             <LoadingState label="어울리는 업체를 찾는 중..." />
-          ) : (
-            <Button type="submit" wide>
-              AI에게 추천받기
-            </Button>
-          )}
+          ) : null}
         </form>
 
-        {!isLoading && recommendations ? (
-          recommendations.length > 0 ? (
-            <div className="company-grid ai-recommend-results">
-              {recommendations.map(({ company, reason }) => (
-                <div className="ai-recommend-result" key={company.id}>
-                  <p className="ai-recommend-reason">{reason}</p>
-                  <CompanyCard company={company} detailLabel="자세히 보기" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title="조건에 맞는 업체를 찾지 못했습니다."
-              description="다른 표현으로 다시 설명해 보세요."
-            />
-          )
-        ) : null}
+        <div aria-busy={isLoading}>
+          <p className="sr-only" role="status" aria-live="polite">
+            {statusMessage}
+          </p>
+
+          {!isLoading && recommendations ? (
+            recommendations.length > 0 ? (
+              <div className="company-grid ai-recommend-results">
+                {recommendations.map(({ company, reason }) => (
+                  <div className="ai-recommend-result" key={company.id}>
+                    <p className="ai-recommend-reason">{reason}</p>
+                    <CompanyCard company={company} detailLabel="자세히 보기" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                title="조건에 맞는 업체를 찾지 못했습니다."
+                description="다른 표현으로 다시 설명해 보세요."
+              />
+            )
+          ) : null}
+        </div>
       </div>
     </section>
   );
