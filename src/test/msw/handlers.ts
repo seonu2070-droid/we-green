@@ -1,4 +1,5 @@
 import { http, HttpResponse } from "msw";
+import { filterCompaniesBy } from "../../utils/companyFilters";
 import { DEMO_USER, FAKE_ACCESS_TOKEN, FIXTURE_COMPANIES } from "./fixtures";
 
 function requireBearerToken(request: Request): boolean {
@@ -62,13 +63,10 @@ export const handlers = [
     const url = new URL(request.url);
     const region = url.searchParams.get("region");
     const specialty = url.searchParams.get("specialty");
-    const companies = FIXTURE_COMPANIES.filter(
-      (company) =>
-        (!region || region === "all" || company.region === region) &&
-        (!specialty ||
-          specialty === "all" ||
-          company.specialties.includes(specialty)),
-    );
+    const companies = filterCompaniesBy(FIXTURE_COMPANIES, {
+      region: region || "all",
+      specialty: specialty || "all",
+    });
     return HttpResponse.json({ data: { companies } });
   }),
 

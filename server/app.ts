@@ -91,7 +91,9 @@ export function createApp(repository = new CompanyRepository()) {
         (!region || region === "all" || company.region === region) &&
         (!specialty ||
           specialty === "all" ||
-          company.specialties.includes(specialty)),
+          company.specialties.includes(specialty) ||
+          company.category === specialty ||
+          company.services.includes(specialty)),
     );
     response.json({ data: { companies: filteredCompanies } });
   });

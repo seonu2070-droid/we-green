@@ -48,3 +48,13 @@ export const FIXTURE_COMPANIES: Company[] = [
     gallery: ["/assets/images/company-1.webp"],
   },
 ];
+
+// A category-only match complements the existing service-only match.
+FIXTURE_COMPANIES.push({
+  ...FIXTURE_COMPANIES[0],
+  id: "category-only",
+  name: "Category-only partner",
+  category: FIXTURE_COMPANIES[0].services[1],
+  specialties: [],
+  services: [],
+});

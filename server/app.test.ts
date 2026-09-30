@@ -10,6 +10,7 @@ import {
   getCompanyRecommendations,
 } from "./openai.ts";
 import { createTempDataFilePath, removeDataFile } from "./test-utils.ts";
+import type { Company } from "./types.ts";
 
 vi.mock("./openai.ts", async () => {
   const actual = await vi.importActual<typeof import("./openai.ts")>(
@@ -118,6 +119,63 @@ describe("GET /api/auth/me", () => {
 });
 
 describe("GET /api/companies", () => {
+  it.each([
+    [{ region: "경기", specialty: "정원 유지관리" }, ["blue", "forest", "season"]],
+    [{ region: "인천", specialty: "정원 유지관리" }, ["care"]],
+    [{ region: "서울", specialty: "정원 유지관리" }, []],
+    [{ specialty: "없는 분야" }, []],
+    [{ specialty: "정원" }, []],
+    [{ region: "없는 지역" }, []],
+    [{ region: "all", specialty: "all" }, SEED_COMPANIES.map((company) => company.id)],
+    [{ region: "", specialty: "" }, SEED_COMPANIES.map((company) => company.id)],
+  ])("applies exact, combined, and inactive filters: %j", async (query, expectedIds) => {
+    const response = await request(app).get("/api/companies").query(query);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.companies.map((company: { id: string }) => company.id))
+      .toEqual(expectedIds);
+  });
+
+  async function setFilterCompanies() {
+    const repository = new CompanyRepository(dataFile);
+    app = createApp(repository);
+    const base = SEED_COMPANIES[0];
+    const companies = [
+      { ...base, id: "specialty-match", region: "filter-region", specialties: ["filter-specialty"], category: "other", services: [] },
+      { ...base, id: "category-match", region: "filter-region", specialties: [], category: "filter-specialty", services: [] },
+      { ...base, id: "service-match", region: "filter-region", specialties: [], category: "other", services: ["filter-specialty"] },
+      { ...base, id: "other-region", region: "other-region", specialties: [], category: "other", services: ["filter-specialty"] },
+      { ...base, id: "no-match", region: "filter-region", specialties: [], category: "other", services: [] },
+    ];
+    for (const company of companies) await repository.create(company);
+  }
+
+  it("includes service-only specialty matches", async () => {
+    await setFilterCompanies();
+    const response = await request(app).get("/api/companies").query({ specialty: "filter-specialty" });
+    expect(response.status).toBe(200);
+    expect(response.body.data.companies.map((company: { id: string }) => company.id).sort()).toEqual([
+      "category-match", "other-region", "service-match", "specialty-match",
+    ]);
+  });
+
+  it("includes category-only specialty matches", async () => {
+    const repository = new CompanyRepository(dataFile);
+    await repository.create({ ...SEED_COMPANIES[0], id: "category-only", specialties: [], category: "category-filter", services: [] });
+    const response = await request(app).get("/api/companies").query({ specialty: "category-filter" });
+    expect(response.status).toBe(200);
+    expect(response.body.data.companies.map((company: { id: string }) => company.id)).toEqual(["category-only"]);
+  });
+
+  it("combines region with all specialty match sources", async () => {
+    await setFilterCompanies();
+    const response = await request(app).get("/api/companies").query({ region: "filter-region", specialty: "filter-specialty" });
+    expect(response.status).toBe(200);
+    expect(response.body.data.companies.map((company: { id: string }) => company.id).sort()).toEqual([
+      "category-match", "service-match", "specialty-match",
+    ]);
+  });
+
   it("returns the seeded company list", async () => {
     const response = await request(app).get("/api/companies");
     expect(response.status).toBe(200);
@@ -137,10 +195,15 @@ describe("GET /api/companies", () => {
       "/api/companies?specialty=정원 유지관리",
     );
     expect(response.status).toBe(200);
-    const companies = response.body.data.companies as { specialties: string[] }[];
-    expect(
-      companies.every((company) => company.specialties.includes("정원 유지관리")),
-    ).toBe(true);
+    const companies = response.body.data.companies as Company[];
+    const expected = SEED_COMPANIES.filter((company) =>
+      company.specialties.includes("정원 유지관리") ||
+      company.category === "정원 유지관리" ||
+      company.services.includes("정원 유지관리"),
+    );
+    expect(companies.map((company) => company.id)).toEqual(
+      expected.map((company) => company.id),
+    );
   });
 });
 
