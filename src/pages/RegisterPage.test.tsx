@@ -75,5 +75,9 @@ describe("RegisterPage", () => {
     expect(
       await screen.findByText("등록 정보를 저장하는 중..."),
     ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "등록 신청서 제출하기" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 });

@@ -28,4 +28,5 @@ export const config = {
     name: process.env.DEMO_USER_NAME ?? "WE:GREEN 파트너",
   },
   openaiApiKey: process.env.OPENAI_API_KEY,
+  openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
 } as const;

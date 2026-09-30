@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { mswServer } from "../../test/msw/server";
@@ -41,6 +41,43 @@ describe("AiRecommendSection", () => {
       await screen.findByText(FIXTURE_COMPANIES[0].name),
     ).toBeInTheDocument();
     expect(screen.getByText("테스트 추천 이유입니다.")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "추천 업체 1곳을 찾았습니다.",
+    );
+  });
+
+  it("keeps the submit button rendered and aria-disabled while loading", async () => {
+    mswServer.use(
+      http.post("/api/recommend", async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        return HttpResponse.json({ data: { recommendations: [] } });
+      }),
+    );
+
+    const user = userEvent.setup();
+    renderWithProviders(<AiRecommendSection />);
+
+    await user.type(
+      screen.getByLabelText(/원하시는 정원이나 상황을 설명해 주세요/),
+      "로딩 중 버튼 상태를 확인합니다",
+    );
+    await user.click(screen.getByRole("button", { name: "AI에게 추천받기" }));
+
+    expect(
+      await screen.findByText("어울리는 업체를 찾는 중..."),
+    ).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: "AI에게 추천받기" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).not.toBeDisabled();
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText("어울리는 업체를 찾는 중..."),
+      ).not.toBeInTheDocument(),
+    );
+    expect(
+      screen.getByRole("button", { name: "AI에게 추천받기" }),
+    ).toHaveAttribute("aria-disabled", "false");
   });
 
   it("shows an empty state when there are no matches", async () => {
@@ -60,8 +97,11 @@ describe("AiRecommendSection", () => {
     await user.click(screen.getByRole("button", { name: "AI에게 추천받기" }));
 
     expect(
-      await screen.findByText("조건에 맞는 업체를 찾지 못했습니다."),
-    ).toBeInTheDocument();
+      await screen.findAllByText("조건에 맞는 업체를 찾지 못했습니다."),
+    ).toHaveLength(2);
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "조건에 맞는 업체를 찾지 못했습니다.",
+    );
   });
 
   it("shows an error banner when the request fails", async () => {

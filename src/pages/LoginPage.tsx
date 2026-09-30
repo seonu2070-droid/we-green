@@ -38,6 +38,7 @@ export function LoginPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) return;
     const nextErrors = validateLoginForm(values);
     setErrors(nextErrors);
     setFormError("");
@@ -139,13 +140,10 @@ export function LoginPage() {
               </p>
             ) : null}
 
-            {isSubmitting ? (
-              <LoadingState label="로그인 처리 중..." />
-            ) : (
-              <Button type="submit" wide>
-                로그인하기
-              </Button>
-            )}
+            <Button type="submit" wide aria-disabled={isSubmitting}>
+              로그인하기
+            </Button>
+            {isSubmitting ? <LoadingState label="로그인 처리 중..." /> : null}
 
             <p className="form-footer-note">
               아직 계정이 없어도 됩니다.{" "}

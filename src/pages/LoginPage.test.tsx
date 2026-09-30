@@ -41,6 +41,10 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: "로그인하기" }));
 
     expect(await screen.findByText("로그인 처리 중...")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "로그인하기" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 
   it("shows the server error message for invalid credentials", async () => {
