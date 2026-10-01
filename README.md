@@ -52,6 +52,21 @@ Vite 개발 서버가 `/api` 요청을 API 서버로 프록시합니다.
 
 ## 환경 변수
 
+### Amplitude 및 GTM 분석
+
+브라우저 기본 분석과 미션 9-1 행동 이벤트를 사용합니다. 홈은 기존 검증 이벤트
+`Viewed Home Page`와 `prompt_version: BA400.4`를 유지하며 중복 page_view를
+보내지 않습니다. 연락하기는 화면 내 완료 시뮬레이션이고 실제 발신은 하지 않습니다.
+
+공개 수집 키와 GTM 컨테이너는 `.env.local`의 `VITE_AMPLITUDE_API_KEY`,
+`VITE_GTM_CONTAINER_ID`로 설정합니다. QA는 `VITE_ANALYTICS_ENVIRONMENT=development`,
+`VITE_ANALYTICS_TRAFFIC_TYPE=qa`를 명시합니다. 이 파일은 Git에 포함하지 않습니다.
+키/컨테이너가 없으면 해당 SDK/태그를 초기화하지 않습니다.
+
+이벤트 정의, 개인정보 allowlist, 홈 이름 매핑, GTM 필드와 검증 절차는
+[계측 계약](docs/analytics-tracking.md)을 참고하세요. 자동 테스트는 실제 분석 수집이나
+LLM 호출을 하지 않습니다. 실제 수신 여부는 별도 Amplitude/GA4 화면에서 확인해야 합니다.
+
 - `VITE_API_BASE_URL`: 프론트와 API 도메인이 다를 때 API 기준 URL. 같은 도메인이면 비워 둡니다.
 - `PORT`: API 포트. 기본값 `8787`.
 - `JWT_SECRET`: JWT 서명 키. 운영 환경에서는 필수입니다.
@@ -199,3 +214,10 @@ npm start
 **Cold Start 안내**: Render 무료 플랜은 공식적으로 15분간 요청이 없으면 인스턴스가 절전 모드로 전환되고, 다음 요청이 최대 50초 이상 지연될 수 있습니다. 다만 이 프로젝트는 `render.yaml`에 `healthCheckPath: /api/health`를 지정해 두었는데, Render가 이 경로를 주기적으로 자체 폴링하면서 그 트래픽 자체가 활동으로 간주되어 실제로는 절전 모드로 잘 전환되지 않는 것을 확인했습니다(2026-09-03 기준: 실사용 요청 없이 16분 방치 후에도 응답 지연 없음(약 350~410ms), Render Events 로그에도 spin-down 이벤트 없음). 그렇다고 절전 모드 자체가 비활성화된 것은 아니므로, 정말 오랫동안(예: 몇 시간 이상) 아무 요청도 없었다면 첫 접속 시 지연이 발생할 수 있습니다. 응답 지연을 완전히 없애려면 유료 플랜으로 전환해야 합니다.
 
 실제 배포 주소가 `https://we-green.onrender.com`과 다르면 `ALLOWED_ORIGINS` 환경 변수를 실제 주소로 변경해야 합니다. 프론트엔드를 다른 도메인(예: Vercel)에 배포했다면, 그 프론트 도메인도 `ALLOWED_ORIGINS`에 포함하고 프론트엔드의 `VITE_API_BASE_URL`을 이 Render 주소로 설정합니다.
+
+
+## Analytics deployment and anonymous identity safeguards
+
+Vercel builds require VITE_AMPLITUDE_API_KEY and a valid VITE_GTM_CONTAINER_ID. Production requires VITE_ANALYTICS_ENVIRONMENT=production and VITE_ANALYTICS_TRAFFIC_TYPE=external. Preview requires staging and qa respectively. Missing or mismatched settings stop the build; errors contain variable names only. Local builds retain optional analytics.
+
+The browser supplies an application-owned random anonymous device ID, validated and persisted separately from SDK identity storage. URL deviceId/ampDeviceId and existing SDK identities are ignored. If storage is unavailable, identity remains stable for the current page but cannot persist across refresh. It is never derived from login identity.

@@ -27,10 +27,12 @@ export function CompanyPreviewSection({
           </Link>
         </div>
         <div className="company-grid">
-          {companies.map((company) => (
+          {companies.map((company, index) => (
             <CompanyCard
               key={company.id}
               company={company}
+              sourceSurface="home_preview"
+              position={index + 1}
               detailLabel="자세히 보기"
             />
           ))}
