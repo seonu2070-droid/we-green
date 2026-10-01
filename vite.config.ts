@@ -1,8 +1,18 @@
 import react from "@vitejs/plugin-react";
 import { configDefaults, defineConfig } from "vitest/config";
+import { loadEnv } from "vite";
+import { validateAnalyticsDeployment } from "./build/analytics-env.ts";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, mode }) => {
+  if (command === "build") {
+    validateAnalyticsDeployment({
+      ...loadEnv(mode, process.cwd(), "VITE_"),
+      VERCEL: process.env.VERCEL,
+      VERCEL_ENV: process.env.VERCEL_ENV,
+    });
+  }
+  return {
   plugins: [react()],
   server: {
     proxy: {
@@ -17,7 +27,7 @@ export default defineConfig({
         test: {
           name: "server",
           environment: "node",
-          include: ["server/**/*.test.ts"],
+          include: ["server/**/*.test.ts", "build/**/*.test.ts"],
         },
       },
       {
@@ -31,4 +41,5 @@ export default defineConfig({
       },
     ],
   },
+  };
 });

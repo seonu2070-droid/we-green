@@ -1,4 +1,7 @@
 import { useSearchParams } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { useAnalyticsVisit } from "../analytics/AnalyticsProvider";
+import { controlledFilter, trackEvent } from "../analytics/tracking";
 import { REGION_OPTIONS, SPECIALTY_OPTIONS } from "../data/companies";
 import { useCompanies } from "../context/CompanyContext";
 import {
@@ -19,8 +22,32 @@ export function CompaniesPage() {
   const { filterCompanies, isLoading, error, reloadCompanies } = useCompanies();
   const filters = readFiltersFromSearchParams(searchParams);
   const companies = filterCompanies(filters);
+  const visit = useAnalyticsVisit();
+  const listedVisit = useRef<string | undefined>(undefined);
+  const pendingFilter = useRef<{ visitId: string; key: keyof CompanyFilters; value: string } | undefined>(undefined);
+
+  useEffect(() => {
+    if (isLoading || error) return;
+    const properties = {
+      filter_region: controlledFilter(filters.region, "region"),
+      filter_specialty: controlledFilter(filters.specialty, "specialty"),
+      result_count: companies.length,
+    };
+    if (listedVisit.current !== visit.id) {
+      listedVisit.current = visit.id;
+      trackEvent("company_list_view", visit, properties);
+    }
+    const pending = pendingFilter.current;
+    if (pending?.visitId !== visit.id) { pendingFilter.current = undefined; return; }
+    if (filters[pending.key] === pending.value) {
+      pendingFilter.current = undefined;
+      trackEvent("company_filter_applied", visit, { ...properties, changed_filter: pending.key });
+    }
+  }, [visit, filters.region, filters.specialty, companies.length, isLoading, error]);
 
   const updateFilter = (key: keyof CompanyFilters, value: string) => {
+    if (filters[key] === value) return;
+    pendingFilter.current = { visitId: visit.id, key, value };
     setSearchParams(writeFiltersToSearchParams(searchParams, key, value), {
       replace: true,
     });
@@ -90,8 +117,8 @@ export function CompaniesPage() {
             </div>
           ) : companies.length > 0 ? (
             <div className="company-grid directory-grid">
-              {companies.map((company) => (
-                <CompanyCard key={company.id} company={company} />
+              {companies.map((company, index) => (
+                <CompanyCard key={company.id} company={company} sourceSurface="directory" position={index + 1} />
               ))}
             </div>
           ) : (

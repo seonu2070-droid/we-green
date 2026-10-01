@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { AnalyticsProvider } from "../../analytics/AnalyticsProvider";
 
 function scrollToHash(hash: string): void {
   const id = hash.replace(/^#/, "");
@@ -40,13 +41,13 @@ export function Layout() {
   }, [location.pathname, location.hash, location.key]);
 
   return (
-    <>
+    <AnalyticsProvider>
       <a className="skip-link" href="#main-content">
         본문으로 바로가기
       </a>
       <Header />
       <Outlet />
       <Footer />
-    </>
+    </AnalyticsProvider>
   );
 }

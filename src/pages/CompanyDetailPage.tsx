@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigationType, useParams, useSearchParams } from "react-router-dom";
+import { useAnalyticsVisit } from "../analytics/AnalyticsProvider";
+import { isSourceSurface, trackEvent } from "../analytics/tracking";
 import { useCompanies } from "../context/CompanyContext";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/ui/Button";
@@ -11,7 +13,43 @@ export function CompanyDetailPage() {
   const [searchParams] = useSearchParams();
   const { getCompanyById, isLoading, error, reloadCompanies } = useCompanies();
   const company = getCompanyById(id);
-  const [inquiryOpen, setInquiryOpen] = useState(false);
+  const visit = useAnalyticsVisit();
+  const location = useLocation();
+  const navigationType = useNavigationType();
+  const [inquiry, setInquiry] = useState({ visitId: visit.id, open: false, completed: false, position: "detail_hero" });
+  if (inquiry.visitId !== visit.id) {
+    setInquiry({ visitId: visit.id, open: false, completed: false, position: "detail_hero" });
+  }
+  const inquiryOpen = inquiry.visitId === visit.id && inquiry.open;
+  const completed = inquiry.visitId === visit.id && inquiry.completed;
+  const detailedVisit = useRef<string | undefined>(undefined);
+  const revealedVisit = useRef<string | undefined>(undefined);
+  const completedVisit = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (isLoading || error || !company || company.id !== id) return;
+    if (detailedVisit.current !== visit.id) {
+      detailedVisit.current = visit.id;
+      const state = location.state as { analyticsCompanyId?: unknown; analyticsSource?: unknown } | null;
+      const source = navigationType === "PUSH" && state?.analyticsCompanyId === company.id && isSourceSurface(state.analyticsSource)
+        ? state.analyticsSource : "direct_or_unknown";
+      trackEvent("company_detail_view", visit, { company_id: company.id, source_surface: source });
+    }
+    if (inquiryOpen && revealedVisit.current !== visit.id) {
+      revealedVisit.current = visit.id;
+      trackEvent("contact_revealed", visit, { company_id: company.id, cta_position: inquiry.position });
+    }
+  }, [visit, company, id, isLoading, error, inquiryOpen, inquiry.position, location.state, navigationType]);
+
+  const revealContact = (position: "detail_hero" | "inquiry_section") => {
+    if (!inquiryOpen) setInquiry({ visitId: visit.id, open: true, completed: false, position });
+  };
+  const completeContact = () => {
+    if (!company || !inquiryOpen || completed || completedVisit.current === visit.id) return;
+    completedVisit.current = visit.id;
+    setInquiry(current => ({ ...current, completed: true }));
+    trackEvent("contact_button_clicked", visit, { company_id: company.id, cta_position: "contact_panel" });
+  };
 
   usePageTitle(
     company ? `${company.name} | WE:GREEN` : "업체 상세 | WE:GREEN",
@@ -117,7 +155,7 @@ export function CompanyDetailPage() {
             <Button
               className="button-wide"
               wide
-              onClick={() => setInquiryOpen(true)}
+              onClick={() => revealContact("detail_hero")}
             >
               이 업체에 문의하기
             </Button>
@@ -165,7 +203,7 @@ export function CompanyDetailPage() {
                 희망 지역, 공간 유형, 예상 시공 시기와 참고 사진을 준비하면 더
                 구체적인 상담이 가능합니다.
               </p>
-              <Button onClick={() => setInquiryOpen(true)}>
+              <Button onClick={() => revealContact("inquiry_section")}>
                 연락처 확인하기
               </Button>
               {inquiryOpen ? (
@@ -185,6 +223,12 @@ export function CompanyDetailPage() {
                       <dd>평일 09:00–18:00</dd>
                     </div>
                   </dl>
+                  <Button type="button" onClick={completeContact} disabled={completed}>
+                    {completed ? "문의 완료" : "연락하기"}
+                  </Button>
+                  {completed ? (
+                    <p role="status" aria-live="polite">문의 완료를 확인했습니다. 실제 전화나 메시지는 발송되지 않습니다.</p>
+                  ) : null}
                 </div>
               ) : null}
             </article>
