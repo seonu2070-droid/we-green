@@ -2,6 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createPageVisit, safeProperties, trackEvent, controlledFilter } from "./tracking";
 import { sendAmplitudeEvent } from "./amplitude";
 
+function dataLayerLength(): number {
+  const value: unknown = Reflect.get(window, "dataLayer");
+  return Array.isArray(value) ? value.length : 0;
+}
+
 beforeEach(() => { vi.clearAllMocks(); sessionStorage.clear(); });
 describe("privacy allowlist", () => {
   it("drops unapproved fields and marks explicit QA without login identifiers", () => {
@@ -29,9 +34,9 @@ describe("privacy allowlist", () => {
   });
   it("does not send either SDK/dataLayer events when collection is disabled", () => {
     sessionStorage.setItem("wegreen:analytics-disabled", "true");
-    const before = (window as Window & { dataLayer?: unknown[] }).dataLayer?.length ?? 0;
+    const before = dataLayerLength();
     trackEvent("page_view", createPageVisit("/"));
     expect(sendAmplitudeEvent).not.toHaveBeenCalled();
-    expect((window as Window & { dataLayer?: unknown[] }).dataLayer?.length ?? 0).toBe(before);
+    expect(dataLayerLength()).toBe(before);
   });
 });

@@ -8,8 +8,15 @@ import {
 } from "./openai.ts";
 
 const companies = SEED_COMPANIES;
-const mutableConfig = config as { openaiApiKey?: string };
-const originalApiKey = mutableConfig.openaiApiKey;
+const originalApiKey = config.openaiApiKey;
+
+function setApiKey(value: string | undefined) {
+  Object.defineProperty(config, "openaiApiKey", {
+    value,
+    writable: true,
+    configurable: true,
+  });
+}
 
 function mockFetchOnce(overrides: Record<string, unknown> = {}) {
   const fetchMock = vi.fn().mockResolvedValue({
@@ -23,17 +30,17 @@ function mockFetchOnce(overrides: Record<string, unknown> = {}) {
 }
 
 beforeEach(() => {
-  mutableConfig.openaiApiKey = "test-openai-key";
+  setApiKey("test-openai-key");
 });
 
 afterEach(() => {
   vi.unstubAllGlobals();
-  mutableConfig.openaiApiKey = originalApiKey;
+  setApiKey(originalApiKey);
 });
 
 describe("getCompanyRecommendations", () => {
   it("throws RecommendationServiceUnavailableError when no API key is configured", async () => {
-    mutableConfig.openaiApiKey = undefined;
+    setApiKey(undefined);
     await expect(
       getCompanyRecommendations("정원을 만들고 싶어요", companies),
     ).rejects.toThrow(RecommendationServiceUnavailableError);

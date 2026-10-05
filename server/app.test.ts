@@ -35,7 +35,8 @@ async function login() {
     password: config.demoUser.password,
     name: "테스트 파트너",
   });
-  return response.body.data.accessToken as string;
+  const token: string = response.body.data.accessToken;
+  return token;
 }
 
 const validRegistration = {
@@ -185,7 +186,7 @@ describe("GET /api/companies", () => {
   it("filters by region", async () => {
     const response = await request(app).get("/api/companies?region=인천");
     expect(response.status).toBe(200);
-    const companies = response.body.data.companies as { region: string }[];
+    const companies: { region: string }[] = response.body.data.companies;
     expect(companies.length).toBeGreaterThan(0);
     expect(companies.every((company) => company.region === "인천")).toBe(true);
   });
@@ -195,7 +196,7 @@ describe("GET /api/companies", () => {
       "/api/companies?specialty=정원 유지관리",
     );
     expect(response.status).toBe(200);
-    const companies = response.body.data.companies as Company[];
+    const companies: Company[] = response.body.data.companies;
     const expected = SEED_COMPANIES.filter((company) =>
       company.specialties.includes("정원 유지관리") ||
       company.category === "정원 유지관리" ||

@@ -25,8 +25,9 @@ export function createPageVisit(pathname: string): PageVisit {
 }
 
 export function collectionDisabled(): boolean {
-  const privacyNavigator = navigator as Navigator & { globalPrivacyControl?: boolean };
-  if (privacyNavigator.globalPrivacyControl || navigator.doNotTrack === "1") return true;
+  const globalPrivacyControl =
+    "globalPrivacyControl" in navigator && navigator.globalPrivacyControl === true;
+  if (globalPrivacyControl || navigator.doNotTrack === "1") return true;
   try { return sessionStorage.getItem("wegreen:analytics-disabled") === "true"; }
   catch { return true; }
 }

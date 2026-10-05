@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-import type { Response } from "express";
+import { describe, expect, it } from "vitest";
+import express from "express";
+import request from "supertest";
 import { SignJWT } from "jose";
 import {
   createAccessToken,
@@ -15,27 +16,12 @@ const user: AuthUser = {
   loggedInAt: "2026-01-01T00:00:00.000Z",
 };
 
-function mockResponse() {
-  const response = {
-    statusCode: 0,
-    body: undefined as unknown,
-    status(code: number) {
-      response.statusCode = code;
-      return response;
-    },
-    json(payload: unknown) {
-      response.body = payload;
-      return response;
-    },
-  };
-  return response as unknown as Response & typeof response;
-}
-
-function mockRequest(header?: string): AuthenticatedRequest {
-  return {
-    header: (name: string) =>
-      name.toLowerCase() === "authorization" ? header : undefined,
-  } as unknown as AuthenticatedRequest;
+function createTestApp() {
+  const app = express();
+  app.get("/protected", requireAuth, (request: AuthenticatedRequest, response) => {
+    response.json({ authUser: request.authUser });
+  });
+  return app;
 }
 
 describe("createAccessToken / verifyAccessToken", () => {
@@ -68,38 +54,28 @@ describe("createAccessToken / verifyAccessToken", () => {
 
 describe("requireAuth", () => {
   it("responds 401 AUTH_REQUIRED when the header is missing", async () => {
-    const request = mockRequest(undefined);
-    const response = mockResponse();
-    const next = vi.fn();
+    const response = await request(createTestApp()).get("/protected");
 
-    await requireAuth(request, response, next);
-
-    expect(next).not.toHaveBeenCalled();
-    expect(response.statusCode).toBe(401);
+    expect(response.status).toBe(401);
     expect(response.body).toMatchObject({ error: { code: "AUTH_REQUIRED" } });
   });
 
   it("responds 401 INVALID_TOKEN for a malformed bearer token", async () => {
-    const request = mockRequest("Bearer not-a-real-token");
-    const response = mockResponse();
-    const next = vi.fn();
+    const response = await request(createTestApp())
+      .get("/protected")
+      .set("Authorization", "Bearer not-a-real-token");
 
-    await requireAuth(request, response, next);
-
-    expect(next).not.toHaveBeenCalled();
-    expect(response.statusCode).toBe(401);
+    expect(response.status).toBe(401);
     expect(response.body).toMatchObject({ error: { code: "INVALID_TOKEN" } });
   });
 
   it("calls next and attaches authUser for a valid token", async () => {
     const token = await createAccessToken(user);
-    const request = mockRequest(`Bearer ${token}`);
-    const response = mockResponse();
-    const next = vi.fn();
+    const response = await request(createTestApp())
+      .get("/protected")
+      .set("Authorization", `Bearer ${token}`);
 
-    await requireAuth(request, response, next);
-
-    expect(next).toHaveBeenCalledOnce();
-    expect(request.authUser).toEqual(user);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ authUser: user });
   });
 });

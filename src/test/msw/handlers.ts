@@ -10,12 +10,8 @@ function requireBearerToken(request: Request): boolean {
 export const handlers = [
   http.get("/api/health", () => HttpResponse.json({ data: { status: "ok" } })),
 
-  http.post("/api/auth/login", async ({ request }) => {
-    const body = (await request.json()) as {
-      email?: string;
-      password?: string;
-      name?: string;
-    };
+  http.post<never, { email?: string; password?: string; name?: string }>("/api/auth/login", async ({ request }) => {
+    const body = await request.json();
 
     if (body.email !== DEMO_USER.email || body.password !== DEMO_USER.password) {
       return HttpResponse.json(
@@ -86,7 +82,7 @@ export const handlers = [
     return HttpResponse.json({ data: { company } });
   }),
 
-  http.post("/api/companies", async ({ request }) => {
+  http.post<never, { companyName?: string }>("/api/companies", async ({ request }) => {
     if (!requireBearerToken(request)) {
       return HttpResponse.json(
         { error: { code: "AUTH_REQUIRED", message: "로그인이 필요합니다." } },
@@ -94,7 +90,7 @@ export const handlers = [
       );
     }
 
-    const body = (await request.json()) as { companyName?: string };
+    const body = await request.json();
     return HttpResponse.json(
       {
         data: {
@@ -112,8 +108,8 @@ export const handlers = [
     );
   }),
 
-  http.post("/api/recommend", async ({ request }) => {
-    const body = (await request.json()) as { message?: string };
+  http.post<never, { message?: string }>("/api/recommend", async ({ request }) => {
+    const body = await request.json();
     if (!body.message || body.message.trim().length < 5) {
       return HttpResponse.json(
         {

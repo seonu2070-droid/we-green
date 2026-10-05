@@ -50,9 +50,11 @@ function initialReferrer(): string {
 }
 
 function dataLayer(): GtmMessage[] {
-  const target = window as Window & { dataLayer?: GtmMessage[] };
-  target.dataLayer ??= [];
-  return target.dataLayer;
+  const existing: unknown = Reflect.get(window, "dataLayer");
+  if (Array.isArray(existing)) return existing;
+  const created: GtmMessage[] = [];
+  Reflect.set(window, "dataLayer", created);
+  return created;
 }
 
 function loadGtm(context: GtmMessage): void {

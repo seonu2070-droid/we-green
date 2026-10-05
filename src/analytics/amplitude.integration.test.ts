@@ -12,8 +12,8 @@ afterEach(() => {
 async function sendThroughInstalledSdk(url: string, refresh = false) {
   window.history.replaceState({}, "", url);
   const payloads: { events: Record<string, unknown>[] }[] = [];
-  mswServer.use(http.post("https://api2.amplitude.com/2/httpapi", async ({ request }) => {
-    const payload = await request.json() as typeof payloads[number];
+  mswServer.use(http.post<never, (typeof payloads)[number]>("https://api2.amplitude.com/2/httpapi", async ({ request }) => {
+    const payload = await request.json();
     payloads.push(payload);
     return HttpResponse.json({ code: 200, events_ingested: payload.events.length,
       payload_size_bytes: 0, server_upload_time: Date.now() });
@@ -64,8 +64,8 @@ it("the installed SDK sends only the home event without IP, identity, or URL/inp
   vi.stubEnv("VITE_AMPLITUDE_API_KEY", "test-ingestion-key");
   window.history.replaceState({}, "", "/?email=private-contact&message=private-ai-input&utm_campaign=private-campaign#private-hash");
   const payloads: { api_key: string; events: Record<string, unknown>[] }[] = [];
-  mswServer.use(http.post("https://api2.amplitude.com/2/httpapi", async ({ request }) => {
-    const payload = await request.json() as typeof payloads[number];
+  mswServer.use(http.post<never, (typeof payloads)[number]>("https://api2.amplitude.com/2/httpapi", async ({ request }) => {
+    const payload = await request.json();
     payloads.push(payload);
     return HttpResponse.json({
       code: 200,

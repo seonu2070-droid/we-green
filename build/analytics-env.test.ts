@@ -21,8 +21,9 @@ it.each(["VITE_AMPLITUDE_API_KEY", "VITE_GTM_CONTAINER_ID", "VITE_ANALYTICS_ENVI
     let error: unknown;
     try { validateAnalyticsDeployment({ ...configured, [key]: "" }); } catch (caught) { error = caught; }
     expect(error).toBeInstanceOf(Error);
-    expect((error as Error).message).toContain(key);
-    expect((error as Error).message).not.toContain("private-key-canary");
+    const message = error instanceof Error ? error.message : "";
+    expect(message).toContain(key);
+    expect(message).not.toContain("private-key-canary");
   },
 );
 it("rejects preview carrying the production/external classification", () => {

@@ -3,14 +3,17 @@ import { createPageVisit } from "./tracking";
 
 beforeEach(() => {
   vi.resetModules();
-  delete (window as Window & { dataLayer?: unknown[] }).dataLayer;
+  Reflect.deleteProperty(window, "dataLayer");
 });
 afterEach(() => {
   window.history.replaceState({}, "", "/");
   document.querySelectorAll('script[src*="googletagmanager"]').forEach(script => script.remove());
 });
 const properties = { environment: "development", traffic_type: "qa" };
-function layer() { return (window as Window & { dataLayer?: Record<string, unknown>[] }).dataLayer ?? []; }
+function layer(): Record<string, unknown>[] {
+  const value: unknown = Reflect.get(window, "dataLayer");
+  return Array.isArray(value) ? value : [];
+}
 describe("GTM bridge", () => {
   it("loads nothing without a valid container and uses only the two atomic events", async () => {
     const { pushToDataLayer } = await import("./ga4Bridge");
