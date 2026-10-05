@@ -9,10 +9,7 @@ import { Input } from "../components/ui/Input";
 import { LoadingState } from "../components/ui/LoadingState";
 import { PageHero } from "../components/layout/PageHero";
 import { ApiError } from "../data/api";
-
-interface LocationState {
-  from?: string;
-}
+import { isRecord } from "../data/guards";
 
 const initialValues: LoginFormValues = {
   email: "",
@@ -25,7 +22,9 @@ export function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as LocationState | null)?.from ?? "/register";
+  const state: unknown = location.state;
+  const from =
+    isRecord(state) && typeof state.from === "string" ? state.from : "/register";
 
   const [values, setValues] = useState<LoginFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});

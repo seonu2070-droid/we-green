@@ -1,4 +1,5 @@
 import { config } from "./config.ts";
+import { isRecord } from "./guards.ts";
 import type { Company, Recommendation } from "./types.ts";
 
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
@@ -39,12 +40,14 @@ function buildSystemPrompt(): string {
   ].join(" ");
 }
 
-interface ChatCompletionResponse {
-  choices?: { message?: { content?: string } }[];
-}
-
-interface RawRecommendationPayload {
-  recommendations?: { companyId?: unknown; reason?: unknown }[];
+function extractContent(body: unknown): string | undefined {
+  if (!isRecord(body) || !Array.isArray(body.choices)) return undefined;
+  const message: unknown = isRecord(body.choices[0])
+    ? body.choices[0].message
+    : undefined;
+  return isRecord(message) && typeof message.content === "string"
+    ? message.content
+    : undefined;
 }
 
 export async function getCompanyRecommendations(
@@ -94,17 +97,15 @@ export async function getCompanyRecommendations(
     );
   }
 
-  const body = (await response
-    .json()
-    .catch(() => null)) as ChatCompletionResponse | null;
-  const content = body?.choices?.[0]?.message?.content;
+  const body: unknown = await response.json().catch(() => null);
+  const content = extractContent(body);
   if (!content) {
     throw new RecommendationUpstreamError("AI 추천 응답을 읽지 못했습니다.");
   }
 
-  let parsed: RawRecommendationPayload;
+  let parsed: unknown;
   try {
-    parsed = JSON.parse(content) as RawRecommendationPayload;
+    parsed = JSON.parse(content);
   } catch {
     throw new RecommendationUpstreamError("AI 추천 응답 형식이 올바르지 않습니다.");
   }
@@ -112,7 +113,12 @@ export async function getCompanyRecommendations(
   const validIds = new Set(companies.map((company) => company.id));
   const pickedIds = new Set<string>();
   const recommendations: Recommendation[] = [];
-  for (const item of parsed.recommendations ?? []) {
+  const items: unknown[] =
+    isRecord(parsed) && Array.isArray(parsed.recommendations)
+      ? parsed.recommendations
+      : [];
+  for (const item of items) {
+    if (!isRecord(item)) continue;
     if (typeof item.companyId !== "string" || !validIds.has(item.companyId)) continue;
     if (pickedIds.has(item.companyId)) continue;
     if (typeof item.reason !== "string" || !item.reason.trim()) continue;

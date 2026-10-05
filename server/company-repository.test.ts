@@ -1,3 +1,4 @@
+import { writeFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CompanyRepository } from "./company-repository.ts";
 import { SEED_COMPANIES } from "./data/seed-companies.ts";
@@ -35,6 +36,14 @@ beforeEach(() => {
 afterEach(() => removeDataFile(dataFile));
 
 describe("CompanyRepository", () => {
+  it("rejects a data file that contains an invalid company record", async () => {
+    writeFileSync(dataFile, JSON.stringify([{ id: "broken" }]), "utf8");
+    const repository = new CompanyRepository(dataFile);
+    await expect(repository.findAll()).rejects.toThrow(
+      "Company data file contains an invalid company record.",
+    );
+  });
+
   it("seeds the data file with SEED_COMPANIES on first read", async () => {
     const repository = new CompanyRepository(dataFile);
     const companies = await repository.findAll();

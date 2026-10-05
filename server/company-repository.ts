@@ -2,6 +2,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { config } from "./config.ts";
 import { SEED_COMPANIES } from "./data/seed-companies.ts";
+import { isCompany } from "./guards.ts";
 import type { Company } from "./types.ts";
 
 export class CompanyRepository {
@@ -49,7 +50,9 @@ export class CompanyRepository {
     try {
       await readFile(this.dataFile, "utf8");
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      const isMissingFile =
+        error instanceof Error && "code" in error && error.code === "ENOENT";
+      if (!isMissingFile) throw error;
       await mkdir(dirname(this.dataFile), { recursive: true });
       await this.writeCompanies(SEED_COMPANIES);
     }
@@ -61,7 +64,10 @@ export class CompanyRepository {
     if (!Array.isArray(parsed)) {
       throw new Error("Company data file must contain an array.");
     }
-    return parsed as Company[];
+    if (!parsed.every(isCompany)) {
+      throw new Error("Company data file contains an invalid company record.");
+    }
+    return parsed;
   }
 
   private async writeCompanies(companies: Company[]): Promise<void> {

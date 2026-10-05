@@ -1,4 +1,5 @@
 import type { AuthSession } from "../types";
+import { isAuthSession } from "./guards";
 
 const AUTH_SESSION_KEY = "wegreen:auth-session";
 const sessionClearedListeners = new Set<() => void>();
@@ -9,17 +10,7 @@ export function loadAuthSession(): AuthSession | null {
 
   try {
     const session: unknown = JSON.parse(raw);
-    if (
-      typeof session === "object" &&
-      session !== null &&
-      "accessToken" in session &&
-      typeof session.accessToken === "string" &&
-      "user" in session &&
-      typeof session.user === "object" &&
-      session.user !== null
-    ) {
-      return session as AuthSession;
-    }
+    if (isAuthSession(session)) return session;
   } catch {
     // 손상된 세션은 아래에서 제거합니다.
   }

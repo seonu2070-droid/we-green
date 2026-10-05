@@ -49,6 +49,18 @@ describe("getCompanies", () => {
     );
     await expect(getCompanies()).rejects.toMatchObject({ status: 0 });
   });
+
+  it("throws ApiError when the response shape is not a company list", async () => {
+    mswServer.use(
+      http.get("/api/companies", () =>
+        HttpResponse.json({ data: { companies: [{ id: "broken" }] } }),
+      ),
+    );
+    await expect(getCompanies()).rejects.toBeInstanceOf(ApiError);
+    await expect(getCompanies()).rejects.toMatchObject({
+      message: "서버 응답 형식이 올바르지 않습니다.",
+    });
+  });
 });
 
 describe("getCurrentUser", () => {

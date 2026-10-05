@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigationType, useParams, useSearchParams } from "react-router-dom";
 import { useAnalyticsVisit } from "../analytics/AnalyticsProvider";
 import { isSourceSurface, trackEvent } from "../analytics/tracking";
+import { isRecord } from "../data/guards";
 import { useCompanies } from "../context/CompanyContext";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { Button } from "../components/ui/Button";
@@ -30,9 +31,10 @@ export function CompanyDetailPage() {
     if (isLoading || error || !company || company.id !== id) return;
     if (detailedVisit.current !== visit.id) {
       detailedVisit.current = visit.id;
-      const state = location.state as { analyticsCompanyId?: unknown; analyticsSource?: unknown } | null;
-      const source = navigationType === "PUSH" && state?.analyticsCompanyId === company.id && isSourceSurface(state.analyticsSource)
-        ? state.analyticsSource : "direct_or_unknown";
+      const state: unknown = location.state;
+      const analyticsSource = isRecord(state) ? state.analyticsSource : undefined;
+      const source = navigationType === "PUSH" && isRecord(state) && state.analyticsCompanyId === company.id && isSourceSurface(analyticsSource)
+        ? analyticsSource : "direct_or_unknown";
       trackEvent("company_detail_view", visit, { company_id: company.id, source_surface: source });
     }
     if (inquiryOpen && revealedVisit.current !== visit.id) {

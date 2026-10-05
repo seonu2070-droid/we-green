@@ -159,6 +159,37 @@ describe("getCompanyRecommendations", () => {
     ).rejects.toThrow(RecommendationUpstreamError);
   });
 
+  it("ignores malformed recommendation items instead of crashing", async () => {
+    mockFetchOnce({
+      json: async () => ({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                recommendations: [
+                  null,
+                  "text",
+                  { companyId: companies[0].id, reason: "정상 항목" },
+                ],
+              }),
+            },
+          },
+        ],
+      }),
+    });
+
+    const result = await getCompanyRecommendations("아무 내용", companies);
+
+    expect(result).toEqual([{ companyId: companies[0].id, reason: "정상 항목" }]);
+  });
+
+  it("throws RecommendationUpstreamError when the response has no message content", async () => {
+    mockFetchOnce({ json: async () => ({ choices: [{ message: {} }] }) });
+    await expect(
+      getCompanyRecommendations("아무 내용", companies),
+    ).rejects.toThrow(RecommendationUpstreamError);
+  });
+
   it("throws RecommendationUpstreamError when fetch itself fails", async () => {
     vi.stubGlobal(
       "fetch",

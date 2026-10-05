@@ -6,15 +6,16 @@ import type {
   Recommendation,
   RegisterFormValues,
 } from "../types";
+import {
+  isArrayOf,
+  isAuthSession,
+  isAuthUser,
+  isCompany,
+  isRecommendation,
+  isRecord,
+  parseErrorBody,
+} from "./guards";
 import { clearAuthSession, loadAuthSession } from "./storage";
-
-interface ApiErrorBody {
-  error?: {
-    code?: string;
-    message?: string;
-    fields?: Record<string, string>;
-  };
-}
 
 export class ApiError extends Error {
   readonly status: number;
@@ -34,8 +35,12 @@ export class ApiError extends Error {
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
 
+const INVALID_RESPONSE_MESSAGE = "서버 응답 형식이 올바르지 않습니다.";
+
+/** 응답의 `data` 필드를 꺼내 guard로 검증합니다. 실패하면 ApiError를 던집니다. */
 async function apiRequest<T>(
   path: string,
+  parseData: (data: unknown) => T | undefined,
   options: RequestInit = {},
 ): Promise<T> {
   const token = loadAuthSession()?.accessToken;
@@ -51,59 +56,71 @@ async function apiRequest<T>(
     throw new ApiError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.", 0);
   }
 
-  const body = (await response.json().catch(() => ({}))) as ApiErrorBody & T;
+  const body: unknown = await response.json().catch(() => ({}));
   if (!response.ok) {
     if (response.status === 401 && token) {
       clearAuthSession();
     }
+    const { message, fields } = parseErrorBody(body);
     throw new ApiError(
-      body.error?.message ?? "요청을 처리하지 못했습니다.",
+      message ?? "요청을 처리하지 못했습니다.",
       response.status,
-      body.error?.fields,
+      fields,
     );
   }
-  return body;
+
+  const data = isRecord(body) ? parseData(body.data) : undefined;
+  if (data === undefined) {
+    throw new ApiError(INVALID_RESPONSE_MESSAGE, response.status);
+  }
+  return data;
 }
 
 export async function loginWithApi(
   values: LoginFormValues,
 ): Promise<AuthSession> {
-  const response = await apiRequest<{ data: AuthSession }>("/auth/login", {
-    method: "POST",
-    body: JSON.stringify(values),
-  });
-  return response.data;
+  return apiRequest(
+    "/auth/login",
+    (data) => (isAuthSession(data) ? data : undefined),
+    { method: "POST", body: JSON.stringify(values) },
+  );
 }
 
 export async function getCurrentUser(signal?: AbortSignal): Promise<AuthUser> {
-  const response = await apiRequest<{ data: { user: AuthUser } }>("/auth/me", {
-    signal,
-  });
-  return response.data.user;
+  return apiRequest(
+    "/auth/me",
+    (data) => (isRecord(data) && isAuthUser(data.user) ? data.user : undefined),
+    { signal },
+  );
 }
 
 export async function getCompanies(): Promise<Company[]> {
-  const response = await apiRequest<{ data: { companies: Company[] } }>(
-    "/companies",
+  return apiRequest("/companies", (data) =>
+    isRecord(data) && isArrayOf(data.companies, isCompany)
+      ? data.companies
+      : undefined,
   );
-  return response.data.companies;
 }
 
 export async function createCompanyWithApi(
   values: RegisterFormValues,
 ): Promise<Company> {
-  const response = await apiRequest<{ data: { company: Company } }>(
+  return apiRequest(
     "/companies",
+    (data) => (isRecord(data) && isCompany(data.company) ? data.company : undefined),
     { method: "POST", body: JSON.stringify(values) },
   );
-  return response.data.company;
 }
 
 export async function getRecommendations(
   message: string,
 ): Promise<Recommendation[]> {
-  const response = await apiRequest<{
-    data: { recommendations: Recommendation[] };
-  }>("/recommend", { method: "POST", body: JSON.stringify({ message }) });
-  return response.data.recommendations;
+  return apiRequest(
+    "/recommend",
+    (data) =>
+      isRecord(data) && isArrayOf(data.recommendations, isRecommendation)
+        ? data.recommendations
+        : undefined,
+    { method: "POST", body: JSON.stringify({ message }) },
+  );
 }

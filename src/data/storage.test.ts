@@ -50,6 +50,15 @@ describe("auth session storage", () => {
     expect(loadAuthSession()).toBeNull();
   });
 
+  it("discards a stored session whose user is malformed", () => {
+    localStorage.setItem(
+      "wegreen:auth-session",
+      JSON.stringify({ accessToken: "token-abc", user: {} }),
+    );
+    expect(loadAuthSession()).toBeNull();
+    expect(localStorage.getItem("wegreen:auth-session")).toBeNull();
+  });
+
   it("notifies subscribers when the session is cleared", () => {
     const listener = vi.fn();
     const unsubscribe = subscribeToAuthSessionCleared(listener);
