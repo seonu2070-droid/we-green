@@ -7,7 +7,7 @@
     "dev": "concurrently --kill-others-on-fail \"npm:dev:web\" \"npm:dev:api\"",
     "dev:web": "vite",
     "dev:api": "node --env-file-if-exists=.env --watch server/index.ts",
-    "build": "tsc -b && vite build && npm run build:server",
+    "build": "npm run lint && tsc -b && vite build && npm run build:server",
     "build:server": "tsc -p tsconfig.server.build.json",
     "lint": "oxlint",
     "preview": "vite preview",
